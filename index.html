@@ -111,7 +111,7 @@
   .f { display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid #eef0f6; }
   .f:last-child { border-bottom: 0; }
   .f > label { flex: 0 0 92px; font-size: 14px; color: #3b3e52; }
-  .f input[type=text], .f input[type=number] {
+  .f input[type=text] {
     flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 12px 0;
     font: inherit; font-size: 16px; text-align: right; color: #111;
   }
@@ -170,7 +170,7 @@
           <button class="btn" id="bTopIcon">변경</button><button class="btn danger" id="clearTopIcon">제거</button></div>
         <div class="f m-image"><label>이미지</label><div class="thumb" id="pvTop"></div>
           <button class="btn" id="bTop">변경</button><button class="btn danger" id="clearTop">제거</button></div>
-        <div class="f"><label>바 높이</label><input type="number" id="fTopH" min="0" max="200" inputmode="numeric" placeholder="px"></div>
+        <div class="f"><label>바 높이</label><input type="text" id="fTopH" placeholder="px"></div>
       </div>
       <div class="gt">사진</div>
       <div class="grp">
@@ -198,7 +198,7 @@
 
       <div class="gt">상세정보</div>
       <div class="grp">
-        <div class="f"><label>일련번호</label><input type="text" id="fIdnum" placeholder="000000-0000000" inputmode="numeric"></div>
+        <div class="f"><label>일련번호</label><input type="text" id="fIdnum" placeholder="000000-0000000"></div>
         <div class="f"><label>세부주소</label><input type="text" id="fAddr2"></div>
         <div class="f"><label>표시 버튼</label><input type="text" id="fBtn"></div>
         <div class="f"><label>숨기기 버튼</label><input type="text" id="fBtnHide"></div>
@@ -208,7 +208,7 @@
       <div class="gt">QR · 타이머</div>
       <div class="grp">
         <div class="f"><label>QR 내용</label><input type="text" id="fQr"></div>
-        <div class="f"><label>타이머</label><input type="number" id="fSecs" min="1" max="3600" inputmode="numeric" placeholder="초"></div>
+        <div class="f"><label>타이머</label><input type="text" id="fSecs" placeholder="초"></div>
         <div class="f"><label>타이머 라벨</label><input type="text" id="fTimeLabel"></div>
         <div class="f"><label>안내 문구</label><input type="text" id="fHint"></div>
       </div>
@@ -428,6 +428,10 @@ $('close').onclick = closePanel;
 $('fTopH').addEventListener('input', preview);
 $('panel').onclick = e => { if (e.target === $('panel')) closePanel(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+// 입력 보정 없이 문자열 그대로 입력되게 함 (대시 등 특수문자 입력 가능)
+document.querySelectorAll('input[type=text], textarea').forEach(el => {
+  el.setAttribute('autocapitalize', 'off'); el.setAttribute('autocorrect', 'off'); el.spellcheck = false;
+});
 $('save').onclick = () => {
   const prev = data;
   data = collect();
