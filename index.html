@@ -162,6 +162,15 @@
       </div>
       <input type="file" id="fTop" accept="image/*"><input type="file" id="fPhoto" accept="image/*">
 
+      <div class="gt">홈 화면 아이콘</div>
+      <div class="grp">
+        <div class="f"><label>앱 아이콘</label><div class="thumb" id="pvIcon"></div>
+          <button class="btn" id="bIcon">변경</button><button class="btn danger" id="clearIcon">기본값</button></div>
+        <div class="f"><label>앱 이름</label><input type="text" id="fAppName" maxlength="12" placeholder="ID"></div>
+      </div>
+      <input type="file" id="fIcon" accept="image/*">
+      <div class="note">홈 화면에 <b>추가하기 전에</b> 설정해야 반영됩니다. 이미 추가했다면 앱을 삭제한 뒤 Safari에서 다시 추가하세요.</div>
+
       <div class="gt">기본 정보</div>
       <div class="grp">
         <div class="f"><label>이름</label><input type="text" id="fName"></div>
@@ -216,9 +225,10 @@ const DEFAULTS = {
   name: '홍길동', birth: '00.01.01', addr: '서울특별시 OO구', addr2: 'OO아파트 101동 101호',
   idnum: '000000-0000000', btn: '상세정보 표시', btnHide: '상세정보 숨기기',
   qr: 'SAMPLE-ID-0000', secs: 30, timeLabel: '남은시간', hint: 'QR코드를 리더기에 스캔하세요',
-  banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지', photo: '', topimg: '', topH: 36
+  banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지', photo: '', topimg: '', topH: 36,
+  icon: '', appName: 'ID'
 };
-const IMG_KEYS = ['photo', 'topimg'];
+const IMG_KEYS = ['photo', 'topimg', 'icon'];
 
 // 저장/백업 데이터 검증: 알려진 키와 타입만 허용, 이미지는 data:image 만 허용
 function sanitize(src) {
@@ -247,6 +257,15 @@ function applyDetail() {
   $('vAddr2').textContent = revealed ? data.addr2 : data.addr2.replace(/\d/g, '*');
   $('vBtn').textContent = showDetail ? data.btnHide : data.btn;
 }
+// 홈 화면에 추가할 때 쓰이는 아이콘/이름 (추가하기 전에 설정해야 반영됨)
+function applyIcon() {
+  let l = document.querySelector('link[rel="apple-touch-icon"]');
+  if (!l) { l = document.createElement('link'); l.rel = 'apple-touch-icon'; document.head.appendChild(l); }
+  l.href = data.icon || 'icon-180.png';
+  const name = data.appName.trim() || 'ID';
+  const m = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+  if (m) m.content = name;
+}
 function applyTop(h, img) {
   $('topbar').style.height = h + 'px';
   $('topbar').style.backgroundImage = img ? 'url("' + img + '")' : 'none';
@@ -259,6 +278,7 @@ function render() {
   $('vHint').textContent = data.hint;
   $('vBanner').textContent = data.banner;
   applyTop(data.topH, data.topimg);
+  applyIcon();
   $('photo').src = data.photo || PLACEHOLDER;
   applyDetail();
   drawQr();
@@ -315,13 +335,30 @@ function readImage(file, maxW, cb) {
   im.src = url;
 }
 
+/* 아이콘: 가운데 기준 정사각형으로 잘라 180px PNG로 저장 */
+function readIcon(file, cb) {
+  const url = URL.createObjectURL(file), im = new Image();
+  im.onload = () => {
+    const n = 180, c = document.createElement('canvas'), x = c.getContext('2d');
+    c.width = c.height = n;
+    x.fillStyle = '#fff'; x.fillRect(0, 0, n, n);
+    const side = Math.min(im.width, im.height);
+    x.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, n, n);
+    URL.revokeObjectURL(url);
+    cb(c.toDataURL('image/png'));
+  };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('이미지를 불러올 수 없습니다.'); };
+  im.src = url;
+}
+
 /* ---------- 편집 시트 ---------- */
-const TEXT = { name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
+const TEXT = { appName: 'fAppName', name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
                qr: 'fQr', timeLabel: 'fTimeLabel', hint: 'fHint', banner: 'fBanner' };
 const NUM = { secs: 'fSecs', topH: 'fTopH' };
 function preview() {
   $('pvTop').style.backgroundImage = draft.topimg ? 'url("' + draft.topimg + '")' : 'none';
   applyTop(Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), draft.topimg);
+  $('pvIcon').style.backgroundImage = 'url("' + (draft.icon || 'icon-180.png') + '")';
   $('pvPhoto').style.backgroundImage = 'url("' + (draft.photo || PLACEHOLDER) + '")';
 }
 function openPanel() {
@@ -355,6 +392,9 @@ $('bTop').onclick = () => $('fTop').click();
 $('bPhoto').onclick = () => $('fPhoto').click();
 $('fTop').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 1400, u => { draft.topimg = u; preview(); }); };
 $('fPhoto').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 700, u => { draft.photo = u; preview(); }); };
+$('bIcon').onclick = () => $('fIcon').click();
+$('fIcon').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readIcon(f, u => { draft.icon = u; preview(); }); };
+$('clearIcon').onclick = () => { draft.icon = ''; preview(); };
 $('clearTop').onclick = () => { draft.topimg = ''; preview(); };
 $('clearPhoto').onclick = () => { draft.photo = ''; preview(); };
 
