@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ID">
-<meta name="theme-color" content="#07173d">
+<meta name="theme-color" content="#e6e8fa">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>ID Card Layout</title>
@@ -46,7 +46,16 @@
     background: var(--bg); display: flex; flex-direction: column; overflow: hidden;
     padding: calc(36px + var(--top)) 16px var(--bottom);
   }
-  .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--navy) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
+  .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--bg) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
+  .topbar { position: relative; }
+  .tb-in { display: none; height: 100%; align-items: center; gap: 12px; padding: 0 16px; color: #1d2040; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; }
+  .tb-in span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .tb-ic { width: 26px; height: 26px; flex: none; object-fit: contain; }
+  .topbar[data-mode=text] .tb-in { display: flex; }
+  .grp[data-mode=text] .m-image, .grp[data-mode=image] .m-text { display: none; }
+  .seg { display: flex; margin-left: auto; background: #eef0f6; border-radius: 9px; padding: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 7px; padding: 6px 12px; font-size: 13px; color: #555; cursor: pointer; }
+  .seg button[aria-pressed=true] { background: #fff; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
   .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 2px 10px rgba(30,40,120,.08); }
   .photo { display: flex; justify-content: center; padding-top: 32px; }
   .photo img { width: 58%; aspect-ratio: 3/4; object-fit: cover; background: #f1f2f6; display: block; }
@@ -122,7 +131,7 @@
 </head>
 <body>
 <div class="phone">
-  <div class="topbar" id="topbar"></div>
+  <div class="topbar" id="topbar"><div class="tb-in"><img class="tb-ic" id="tbIcon" alt="" hidden><span id="tbText"></span></div></div>
 
   <div class="card" id="card">
     <div class="photo"><img id="photo" alt=""></div>
@@ -152,14 +161,23 @@
   <div class="sheet">
     <div class="sheet-h"><h2>내용 편집</h2><button class="x" id="close" aria-label="닫기">✕</button></div>
     <div class="sheet-b">
-      <div class="gt">이미지</div>
-      <div class="grp">
-        <div class="f"><label>상단 바</label><div class="thumb" id="pvTop"></div>
+      <div class="gt">상단 바</div>
+      <div class="grp" id="topGrp">
+        <div class="f"><label>표시 방식</label>
+          <div class="seg"><button data-m="text">글자+아이콘</button><button data-m="image">이미지</button></div></div>
+        <div class="f m-text"><label>글자</label><input type="text" id="fTopText" maxlength="40"></div>
+        <div class="f m-text"><label>아이콘</label><div class="thumb" id="pvTopIcon"></div>
+          <button class="btn" id="bTopIcon">변경</button><button class="btn danger" id="clearTopIcon">제거</button></div>
+        <div class="f m-image"><label>이미지</label><div class="thumb" id="pvTop"></div>
           <button class="btn" id="bTop">변경</button><button class="btn danger" id="clearTop">제거</button></div>
         <div class="f"><label>바 높이</label><input type="number" id="fTopH" min="0" max="200" inputmode="numeric" placeholder="px"></div>
+      </div>
+      <div class="gt">사진</div>
+      <div class="grp">
         <div class="f"><label>사진</label><div class="thumb" id="pvPhoto"></div>
           <button class="btn" id="bPhoto">변경</button><button class="btn danger" id="clearPhoto">제거</button></div>
       </div>
+      <input type="file" id="fTopIcon" accept="image/*">
       <input type="file" id="fTop" accept="image/*"><input type="file" id="fPhoto" accept="image/*">
 
       <div class="gt">홈 화면 아이콘</div>
@@ -226,14 +244,16 @@ const DEFAULTS = {
   idnum: '000000-0000000', btn: '상세정보 표시', btnHide: '상세정보 숨기기',
   qr: 'SAMPLE-ID-0000', secs: 30, timeLabel: '남은시간', hint: 'QR코드를 리더기에 스캔하세요',
   banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지', photo: '', topimg: '', topH: 36,
-  icon: '', appName: 'ID'
+  icon: '', appName: 'ID',
+  topMode: 'text', topText: '주민등록증 모바일 확인 서비스', topIcon: ''
 };
-const IMG_KEYS = ['photo', 'topimg', 'icon'];
+const IMG_KEYS = ['photo', 'topimg', 'icon', 'topIcon'];
 
 // 저장/백업 데이터 검증: 알려진 키와 타입만 허용, 이미지는 data:image 만 허용
 function sanitize(src) {
   const out = Object.assign({}, DEFAULTS);
   if (!src || typeof src !== 'object') return out;
+  if (!src.topMode && src.topimg) src = Object.assign({}, src, { topMode: 'image' }); // 이전 버전 데이터 호환
   for (const k in DEFAULTS) {
     const v = src[k];
     if (typeof v !== typeof DEFAULTS[k]) continue;
@@ -241,6 +261,7 @@ function sanitize(src) {
     out[k] = v;
   }
   out.secs = Math.min(3600, Math.max(1, Math.round(out.secs) || DEFAULTS.secs));
+  out.topMode = out.topMode === 'image' ? 'image' : 'text';
   out.topH = Math.min(200, Math.max(0, Math.round(out.topH) || 0));
   return out;
 }
@@ -266,9 +287,14 @@ function applyIcon() {
   const m = document.querySelector('meta[name="apple-mobile-web-app-title"]');
   if (m) m.content = name;
 }
-function applyTop(h, img) {
-  $('topbar').style.height = h + 'px';
-  $('topbar').style.backgroundImage = img ? 'url("' + img + '")' : 'none';
+function applyTop(o) {
+  const t = $('topbar'), text = o.topMode === 'text';
+  t.dataset.mode = o.topMode;
+  t.style.height = o.topH + 'px';
+  t.style.backgroundImage = !text && o.topimg ? 'url("' + o.topimg + '")' : 'none';
+  $('tbText').textContent = o.topText;
+  $('tbIcon').hidden = !o.topIcon;
+  if (o.topIcon) $('tbIcon').src = o.topIcon;
 }
 function render() {
   $('vName').textContent = data.name;
@@ -277,7 +303,7 @@ function render() {
   $('vTimeLabel').textContent = data.timeLabel;
   $('vHint').textContent = data.hint;
   $('vBanner').textContent = data.banner;
-  applyTop(data.topH, data.topimg);
+  applyTop(data);
   applyIcon();
   $('photo').src = data.photo || PLACEHOLDER;
   applyDetail();
@@ -327,9 +353,11 @@ function readImage(file, maxW, cb) {
   im.onload = () => {
     const k = Math.min(1, maxW / im.width), c = document.createElement('canvas');
     c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
-    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    const x = c.getContext('2d'), jpeg = file.type === 'image/jpeg';
+    if (jpeg) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); } // JPEG는 투명을 못 담으므로 흰 배경
+    x.drawImage(im, 0, 0, c.width, c.height);
     URL.revokeObjectURL(url);
-    cb(c.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', .88));
+    cb(c.toDataURL(jpeg ? 'image/jpeg' : 'image/png', .88)); // PNG/WebP/GIF 등은 투명도 유지
   };
   im.onerror = () => { URL.revokeObjectURL(url); toast('이미지를 불러올 수 없습니다.'); };
   im.src = url;
@@ -352,12 +380,15 @@ function readIcon(file, cb) {
 }
 
 /* ---------- 편집 시트 ---------- */
-const TEXT = { appName: 'fAppName', name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
+const TEXT = { appName: 'fAppName', topText: 'fTopText', name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
                qr: 'fQr', timeLabel: 'fTimeLabel', hint: 'fHint', banner: 'fBanner' };
 const NUM = { secs: 'fSecs', topH: 'fTopH' };
 function preview() {
   $('pvTop').style.backgroundImage = draft.topimg ? 'url("' + draft.topimg + '")' : 'none';
-  applyTop(Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), draft.topimg);
+  applyTop(Object.assign({}, draft, { topH: Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), topText: $('fTopText').value }));
+  $('pvTopIcon').style.backgroundImage = draft.topIcon ? 'url("' + draft.topIcon + '")' : 'none';
+  $('topGrp').dataset.mode = draft.topMode;
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === draft.topMode));
   $('pvIcon').style.backgroundImage = 'url("' + (draft.icon || 'icon-180.png') + '")';
   $('pvPhoto').style.backgroundImage = 'url("' + (draft.photo || PLACEHOLDER) + '")';
 }
@@ -369,7 +400,7 @@ function openPanel() {
   preview();
   $('panel').classList.add('open'); document.body.classList.add('lock');
 }
-function closePanel() { applyTop(data.topH, data.topimg); $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
+function closePanel() { applyTop(data); $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
 function collect() {
   const d = Object.assign({}, draft);
   for (const k in TEXT) d[k] = $(TEXT[k]).value;
@@ -388,6 +419,11 @@ $('save').onclick = () => {
   render(); closePanel(); toast('저장되었습니다');
 };
 
+$('bTopIcon').onclick = () => $('fTopIcon').click();
+$('fTopIcon').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 96, u => { draft.topIcon = u; preview(); }); };
+$('clearTopIcon').onclick = () => { draft.topIcon = ''; preview(); };
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { draft.topMode = b.dataset.m; preview(); });
+$('fTopText').addEventListener('input', preview);
 $('bTop').onclick = () => $('fTop').click();
 $('bPhoto').onclick = () => $('fPhoto').click();
 $('fTop').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 1400, u => { draft.topimg = u; preview(); }); };
