@@ -1,1 +1,1 @@
-{"name":"ID","short_name":"ID","start_url":"./","display":"standalone","background_color":"#e6e8fa","theme_color":"#e6e8fa","icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]}
+{"name":"ID","short_name":"ID","start_url":"./","display":"standalone","background_color":"#e6e8fa","theme_color":"#e6e8fa","icons":[{"src":"icon-180.png","sizes":"180x180","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}],"scope":"../"}
