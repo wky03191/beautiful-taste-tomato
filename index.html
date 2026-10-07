@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mobile Home</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root {
+    --text: #1e2124;
+    --text-sub: #464c53;
+    --primary: #256ef4;
+    --primary-dark: #0b50d0;
+    --green: #0fb87d;
+    --bg: #eef2f7;
+    --bg-header: #f8fafc;
+    --surface: #ffffff;
+    --line: #d8e5fd;
+    --line-gray: #cdd1d5;
+    --chip-bg: #f4f5f6;
+    --pink: #fbeff0;
+    --mint: #eaf6ec;
+    --gray: #eef2f7;
+    --sky: #e7f4fe;
+    --grad: linear-gradient(102deg, var(--green) 10%, var(--primary) 80%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }  /* 더블 탭 확대 끔 (두 손가락 확대는 유지) */
+  body {
+    font-family: "Pretendard", "Malgun Gothic", sans-serif;
+    font-size: 17px; line-height: 1.5; color: var(--text);
+    background: #f4f5f6;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .app { max-width: 480px; margin: 0 auto; background: var(--bg); min-height: 100vh; min-height: 100dvh; }
+  .ellipsis { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ico { width: 20px; height: 20px; flex: none; }
+
+  /* ---------- 상단 배너 ---------- */
+  .top-banner {
+    height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 16px;
+    background: var(--surface); font-size: 13px; color: var(--text-sub);
+  }
+  .top-banner[hidden] { display: none; }
+  .top-banner[href] { text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ---------- 헤더 ---------- */
+  .header {
+    position: sticky; top: 0; z-index: 20; height: 64px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+    background: linear-gradient(var(--bg-header) 32px, var(--bg) 100%);
+  }
+  .logo { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-mark { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(160deg, #e2453c 0 48%, #1d4fa3 52%); }
+  .logo b { color: var(--primary); }
+  .header .logo { min-width: 0; margin-right: 12px; }
+  .logo-text { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .header-menu { flex: none; display: flex; gap: 24px; }
+  .header-menu a, .header-menu button {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 11px; font-weight: 700;
+  }
+  .header-menu svg { width: 22px; height: 22px; }
+
+  /* ---------- 공지 ---------- */
+  .notice {
+    display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.04); font-size: 15px;
+  }
+
+  /* ---------- 검색 ---------- */
+  .search {
+    margin: 16px 24px; padding: 2px; border-radius: 32px; background: var(--grad);
+    box-shadow: 0 6px 8px rgba(37,110,244,.1);
+  }
+  .search-inner {
+    display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 20px 0 8px;
+    border-radius: 30px; background: var(--surface);
+  }
+  .mascot {
+    width: 48px; height: 48px; margin: -10px 0 -4px; flex: none; border-radius: 50%;
+    display: grid; place-items: center; font-size: 30px; background: #dff5ee;
+  }
+  .search input {
+    flex: 1; min-width: 0; border: 0; outline: 0; background: none;
+    font: inherit; font-size: 17px; color: var(--text);
+  }
+  .search input::placeholder { color: #8a949e; }
+  .search svg { width: 26px; height: 26px; }
+
+  /* ---------- 공통 섹션 ---------- */
+  .container { padding: 0 16px 40px; }
+  .section + .section { margin-top: 24px; }
+
+  /* 자주 찾는 서비스 */
+  .favorite {
+    padding: 20px; border-radius: 16px; background: var(--sky);
+    border: 1px solid var(--line); box-shadow: 0 4px 8px rgba(0,0,0,.02);
+  }
+  .sec-title-row { display: flex; align-items: center; justify-content: space-between; margin: 12px 0 14px; }
+  .sec-title { font-size: 17px; font-weight: 700; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .svc-link {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    height: 56px; padding: 0 12px; border-radius: 12px; background: var(--surface);
+    border: 1px solid var(--line); box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    font-size: 15px; font-weight: 700;
+  }
+  .svc-badge {
+    flex: none; width: 22px; height: 22px; border-radius: 5px; display: grid; place-items: center;
+    font-size: 7px; font-weight: 800; color: #fff;
+  }
+  .svc-badge.pdf { background: linear-gradient(135deg, #ff9a6b, #f2683a); }
+  .svc-badge.pc  { background: linear-gradient(135deg, #8ec8ff, #4ea4f7); }
+
+  /* 폴더 탭 모양 섹션 */
+  .tab-card { position: relative; }
+  .tab-head {
+    position: relative; display: inline-flex; align-items: center; gap: 4px;
+    padding: 20px 20px 4px; border-radius: 16px 16px 0 0; background: var(--surface);
+    font-size: 17px; font-weight: 700;
+  }
+  .tab-head::after {          /* 탭과 본문을 잇는 오목한 곡선 */
+    content: ""; position: absolute; left: 100%; bottom: 0; width: 24px; height: 24px;
+    background: radial-gradient(circle at 100% 0, transparent 23.5px, var(--surface) 24px);
+  }
+  .tab-body { background: var(--surface); border-radius: 0 16px 16px 16px; padding: 16px 20px 20px; }
+
+  /* 혜택 카드 */
+  .bn-card { display: flex; align-items: center; height: 56px; padding: 0 12px; border-radius: 12px; font-size: 15px; font-weight: 700; }
+  .bn-card.pink { background: var(--pink); }
+  .bn-card.mint { background: var(--mint); }
+  .bn-card.gray { background: var(--gray); }
+  .bn-card.sky  { background: var(--sky); }
+
+  /* 생활 가이드 카테고리 */
+  .guide-tabs {
+    display: flex; gap: 4px; overflow-x: auto; margin: 0 -20px; padding: 0 14px 4px;
+    scrollbar-width: none;
+  }
+  .guide-tabs::-webkit-scrollbar { display: none; }
+  .g-tab { flex: none; width: 56px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .g-ico {
+    width: 56px; height: 56px; padding: 2px; border-radius: 20px; display: block;
+  }
+  .g-ico span {
+    width: 100%; height: 100%; border-radius: 18px; display: grid; place-items: center;
+    font-size: 26px;
+  }
+  .g-ico span i {
+    width: 44px; height: 44px; border-radius: 16px; display: grid; place-items: center;
+    background: var(--chip-bg); font-style: normal;
+  }
+  .g-tab .label { font-size: 13px; white-space: nowrap; }
+  .g-tab.active .g-ico { background: linear-gradient(to top, var(--primary), var(--green)); }
+  .g-tab.active .g-ico span { background: var(--surface); }
+  .g-tab.active .label { color: var(--primary-dark); font-weight: 700; }
+
+  .guide-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .guide-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 12px 16px; border-radius: 16px; background: var(--gray); font-size: 15px;
+  }
+  .guide-item.hidden { display: none; }
+  .guide-list:not(.open) .guide-item:nth-child(2) {
+    -webkit-mask-image: linear-gradient(#000 20%, transparent);
+            mask-image: linear-gradient(#000 20%, transparent);
+  }
+  .more-btn { display: flex; align-items: center; gap: 4px; margin: 12px auto 0; font-size: 17px; }
+  .more-btn svg { transition: transform .2s; }
+  .more-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+  /* 바로가기 */
+  .shortcut {
+    display: flex; align-items: center; gap: 12px; padding: 17px 20px; border-radius: 16px;
+    background: var(--surface); box-shadow: 0 4px 8px rgba(0,0,0,.02); color: var(--text-sub);
+  }
+  .shortcut .txt { flex: 1; }
+
+  /* ---------- 푸터 ---------- */
+  .footer { background: #f4f5f6; padding-bottom: 110px; }
+  .related {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    height: 56px; padding: 0 16px; background: var(--surface);
+    border-top: 1px solid var(--line-gray); border-bottom: 1px solid var(--line-gray);
+  }
+  .related svg { transition: transform .2s; }
+  .related[aria-expanded="true"] svg { transform: rotate(45deg); }
+  .related-panel { display: none; background: var(--surface); padding: 0 16px 16px; font-size: 15px; }
+  .related-panel.open { display: grid; gap: 8px; }
+  .footer-in { padding: 24px 16px 0; }
+  .footer-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .footer-top .logo { font-size: 18px; font-weight: 700; color: var(--text-sub); }
+  .sns { display: flex; gap: 8px; }
+  .sns a {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-gray);
+    display: grid; place-items: center; background: var(--surface);
+  }
+  .sns svg { width: 20px; height: 20px; }
+  .contact { display: grid; gap: 8px; }
+  .contact b { display: block; }
+  .policy { display: flex; gap: 12px; margin-top: 20px; font-size: 15px; }
+  .policy strong { color: #052b57; }
+  .copy { margin-top: 8px; font-size: 15px; color: var(--text-sub); }
+
+  /* 위로 가기 */
+  .to-top {
+    position: fixed; right: max(16px, calc(50% - 240px + 16px)); bottom: 24px; z-index: 30;
+    width: 56px; height: 56px; border-radius: 8px; display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--line-gray); box-shadow: 0 4px 8px rgba(0,0,0,.08);
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .to-top.show { opacity: 1; pointer-events: auto; }
+
+  /* 사용자 로고 / 바로가기 */
+  .logo-img { height: 32px; max-width: 160px; object-fit: contain; display: block; }
+  .footer-top .logo-img { height: 26px; }
+  .shortcut-emoji { width: 24px; text-align: center; font-size: 20px; line-height: 1; }
+
+  /* ---------- 설정 시트 ---------- */
+  .sheet-dim {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.4);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .sheet-dim.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    width: 100%; max-width: 480px; max-height: 88vh; max-height: 88dvh; overflow-y: auto;
+    overscroll-behavior: contain;  /* 시트 스크롤이 뒤 페이지로 넘어가지 않게 */
+    background: var(--surface); border-radius: 20px 20px 0 0; padding: 12px 20px 24px;
+    transform: translateY(100%); transition: transform .25s ease;
+  }
+  .sheet-dim.open .sheet { transform: none; }
+  .sheet-grip { width: 40px; height: 4px; border-radius: 2px; background: var(--line-gray); margin: 0 auto 16px; }
+  .sheet h2 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .sheet-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
+  .sheet fieldset { border: 0; border-top: 1px solid #e6e8ea; padding: 16px 0 4px; margin-top: 12px; }
+  .sheet legend { font-size: 15px; font-weight: 700; padding-right: 8px; }
+  .field { display: grid; gap: 6px; margin-top: 12px; font-size: 14px; }
+  .field > span { font-weight: 600; color: var(--text-sub); }
+  .field input[type="text"] {
+    height: 44px; padding: 0 12px; border: 1px solid var(--line-gray); border-radius: 8px;
+    font: inherit; font-size: 16px; color: var(--text); background: var(--surface);  /* 16px 미만이면 iOS가 입력 시 화면을 확대함 */
+  }
+  .field input[type="text"]:focus { outline: 2px solid var(--primary); outline-offset: -1px; border-color: transparent; }
+  .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field input[type="color"] {
+    width: 100%; height: 44px; padding: 4px; border: 1px solid var(--line-gray); border-radius: 8px;
+    background: var(--surface); cursor: pointer;
+  }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+  .file-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .file-btn {
+    display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border-radius: 8px;
+    border: 1px solid var(--line-gray); font-size: 14px; cursor: pointer; background: var(--surface);
+  }
+  .file-btn input { display: none; }
+  .file-name { font-size: 13px; color: var(--text-sub); flex: 1; min-width: 0; }
+  .link-btn { font-size: 13px; color: #d93a3a; text-decoration: underline; }
+  .logo-preview {
+    min-height: 56px; border-radius: 12px; background: linear-gradient(var(--bg-header), var(--bg));
+    display: flex; align-items: center; padding: 0 16px; margin-top: 12px;
+  }
+  .field > .hint { font-size: 12px; font-weight: 400; color: #8a949e; }
+  fieldset > .hint { display: block; margin-top: 8px; font-size: 12px; color: #8a949e; }
+  .sheet-actions { display: flex; gap: 8px; margin-top: 24px; }
+  .sheet-actions button { flex: 1; height: 48px; border-radius: 8px; font-size: 16px; font-weight: 700; }
+  .btn-ghost { border: 1px solid var(--line-gray) !important; }
+  .btn-primary { background: var(--primary) !important; color: #fff !important; }
+  .btn-reset { flex: 0 0 auto !important; padding: 0 14px; color: var(--text-sub) !important; font-weight: 400 !important; font-size: 14px !important; }
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; z-index: 130; transform: translate(-50%, 8px);
+    padding: 10px 16px; border-radius: 20px; background: rgba(30,33,36,.9); color: #fff; font-size: 14px;
+    opacity: 0; pointer-events: none; transition: .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* 설정창: 홈 화면 아이콘 미리보기 (iOS 홈 화면 모양) */
+  .home-preview {
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 0 12px;
+    border-radius: 12px; margin-top: 4px; background: linear-gradient(160deg, #4a6fa5, #1b2b4b);
+  }
+  .home-preview-icon {
+    width: 64px; height: 64px; border-radius: 22.5%; overflow: hidden; display: grid; place-items: center;
+    background: rgba(255,255,255,.18); color: rgba(255,255,255,.8); font-size: 11px; text-align: center; white-space: pre-line;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+  }
+  .home-preview-icon img { width: 100%; height: 100%; display: block; }
+  .home-preview-name { max-width: 90px; font-size: 12px; color: #fff; }
+
+  /* 설정창: 비밀번호 영역 */
+  .pin-status { font-size: 14px; color: var(--text-sub); }
+  .pin-status b { color: var(--primary-dark); }
+  .pin-actions { display: flex; gap: 8px; margin: 12px 0 8px; }
+  .btn-small { height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line-gray) !important; font-size: 14px; }
+  .btn-small.danger { color: #d93a3a; }
+
+  /* ---------- 간편 비밀번호 키패드 ---------- */
+  .pin {
+    position: fixed; inset: 0; z-index: 120; display: flex; justify-content: center;
+    background: rgba(0,0,0,.4); opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s;
+  }
+  .pin.open { opacity: 1; visibility: visible; }
+  .pin-panel {
+    width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column;
+    background: var(--surface); transform: translateY(24px); transition: transform .25s ease;
+  }
+  .pin.open .pin-panel { transform: none; }
+  .pin-top { height: 56px; display: flex; align-items: center; justify-content: flex-end; padding: 0 8px; }
+  .pin-close { width: 44px; height: 44px; display: grid; place-items: center; }
+  .pin-body {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0 24px 24px; text-align: center;
+  }
+  .pin-lock {
+    width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--sky); font-size: 26px; margin-bottom: 16px;
+  }
+  .pin-body h2 { font-size: 20px; font-weight: 700; }
+  .pin-sub { margin-top: 8px; min-height: 23px; font-size: 15px; color: var(--text-sub); }
+  .pin-sub.error { color: #d93a3a; }
+  .pin-dots { display: flex; gap: 16px; margin-top: 32px; }
+  .pin-dots i { width: 14px; height: 14px; border-radius: 50%; background: #d9dde2; transition: background .1s, transform .1s; }
+  .pin-dots i.on { background: var(--primary); transform: scale(1.15); }
+  .pin-dots.shake { animation: pin-shake .4s; }
+  @keyframes pin-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+  .pin-keypad {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); background: #1b2b4b;
+    transition: opacity .2s;
+  }
+  .pin-keypad.disabled { opacity: .4; pointer-events: none; }
+  .pin-key {
+    height: 64px; border-radius: 12px; display: grid; place-items: center;
+    font-size: 26px; font-weight: 500; color: #fff; -webkit-tap-highlight-color: transparent;
+  }
+  .pin-key:active { background: #2e4270; }
+  .pin-key.fn { font-size: 15px; color: #b4c0d8; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <a class="top-banner" id="topBanner"><span class="ellipsis" id="bannerText">🏳️ 이 사이트는 레이아웃 템플릿입니다.</span></a>
+
+  <header class="header">
+    <a href="#" class="logo" data-brand><span class="logo-mark"></span><span class="logo-text">서비스<b>24</b></span></a>
+    <nav class="header-menu">
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="7"/><circle cx="7" cy="5" r="2"/><circle cx="17" cy="5" r="2"/><circle cx="9.5" cy="12" r=".8" fill="currentColor"/><circle cx="14.5" cy="12" r=".8" fill="currentColor"/><path d="M10 15.5c1.2 1 2.8 1 4 0"/></svg>
+        AI비서
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="8" r="4"/><path d="M3.5 20c.8-4 3.8-6 7.5-6 1.6 0 3 .4 4.2 1.1M16 18h6m-2.5-2.5L22 18l-2.5 2.5"/></svg>
+        로그인
+      </a>
+      <button type="button" id="menuBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        전체메뉴
+      </button>
+    </nav>
+  </header>
+
+  <a href="#" class="notice">🔔 공지사항 확인하기
+    <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 5 5 5-5 5"/></svg>
+  </a>
+
+  <form class="search" onsubmit="return false">
+    <div class="search-inner">
+      <span class="mascot">🐰</span>
+      <input type="search" placeholder="안녕하세요. 무엇을 알고 싶으세요?" aria-label="검색어">
+      <button type="submit" aria-label="검색">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7.5"/><path d="m16.5 16.5 5 5"/></svg>
+      </button>
+    </div>
+  </form>
+
+  <main class="container">
+
+    <!-- 자주 찾는 서비스 -->
+    <section class="section favorite">
+      <div class="sec-title-row" style="margin-top:0">
+        <h2 class="sec-title">자주 찾는 서비스</h2>
+        <button type="button" aria-label="펼쳐보기">
+          <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3v14M3 10h14"/></svg>
+        </button>
+      </div>
+      <div class="grid-2">
+        <a href="#" class="svc-link"><span class="ellipsis">토지(임야)대장</span><span class="svc-badge pdf">PDF</span></a>
+        <a href="#" class="svc-link"><span class="ellipsis">주민등록등본(초본)</span><span class="svc-badge pdf">PDF</span></a>
+        <a href="#" class="svc-link"><span class="ellipsis">자동차등록원부</span><span class="svc-badge pc">PC</span></a>
+        <a href="#" class="svc-link"><span class="ellipsis">건축물대장</span><span class="svc-badge pdf">PDF</span></a>
+        <a href="#" class="svc-link"><span class="ellipsis">가족관계증명서</span>
+          <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="#7b8cf2" stroke-width="1.6"><path d="M11 3h6v6M17 3l-8 8M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4"/></svg>
+        </a>
+        <a href="#" class="svc-link"><span class="ellipsis">여권 재발급</span>
+          <svg class="ico" viewBox="0 0 20 20"><rect x="2" y="2" width="14" height="16" rx="2" fill="#e5e8ec"/><path d="m8 15 1-3 6-6 2 2-6 6z" fill="#2fb36b"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- 혜택알리미 -->
+    <section class="section tab-card">
+      <a href="#" class="tab-head">혜택알리미
+        <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 5 5 5-5 5"/></svg>
+      </a>
+      <div class="tab-body grid-2">
+        <a href="#" class="bn-card pink"><span class="ellipsis">급한 생활비, 대출 연체, 신용 문제</span></a>
+        <a href="#" class="bn-card mint"><span class="ellipsis">창업을 준비 중이라면, 정부의 초기 지원</span></a>
+        <a href="#" class="bn-card gray"><span class="ellipsis">혼자 살아도 든든하게, 1인 청년 지원</span></a>
+        <a href="#" class="bn-card sky"><span class="ellipsis">양육 부담을 줄일 수 있도록, 정부 지원</span></a>
+      </div>
+    </section>
+
+    <!-- 생활·가족가이드 -->
+    <section class="section tab-card">
+      <a href="#" class="tab-head">생활·가족가이드
+        <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 5 5 5-5 5"/></svg>
+      </a>
+      <div class="tab-body">
+        <div class="guide-tabs" role="tablist" id="guideTabs"></div>
+        <div class="guide-list" id="guideList"></div>
+        <button type="button" class="more-btn" id="moreBtn" aria-expanded="false">더보기
+          <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m5 8 5 5 5-5"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- 바로가기 -->
+    <section class="section">
+      <a href="#" class="shortcut" id="shortcut">
+        <span class="shortcut-emoji" id="shortcutEmoji" hidden></span>
+        <svg id="shortcutIcon" width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="1" width="16" height="22" rx="3" fill="#22c58b"/><rect x="6.5" y="4" width="11" height="13" rx="1.5" fill="#fff"/><circle cx="12" cy="9" r="2" fill="#22c58b"/><path d="M8.5 14.5c.7-2 5.6-2 7 0" stroke="#22c58b" stroke-width="1.5" fill="none"/></svg>
+        <span class="txt" id="shortcutText">내 페이지 바로가기</span>
+        <svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 5 5 5-5 5"/></svg>
+      </a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <button type="button" class="related" id="relatedBtn" aria-expanded="false">소통채널
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v16M4 12h16"/></svg>
+    </button>
+    <div class="related-panel" id="relatedPanel">
+      <a href="#">관련 링크 1</a><a href="#">관련 링크 2</a><a href="#">관련 링크 3</a>
+    </div>
+
+    <div class="footer-in">
+      <div class="footer-top">
+        <span class="logo" data-brand><span class="logo-mark"></span><span class="logo-text">서비스24</span></span>
+        <div class="sns">
+          <a href="#" aria-label="인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="엑스"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+          <a href="#" aria-label="블로그"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5h5a5 5 0 0 1 0 10h-2l-3 4z"/></svg></a>
+        </div>
+      </div>
+      <div class="contact">
+        <p><b>고객센터</b>0000-0000<br>(09:00 ~ 18:00 평일)</p>
+        <p><b>문의 안내</b>국번없이 000 (무료, 365일 24시간)</p>
+      </div>
+      <div class="policy"><strong>개인정보처리방침</strong><a href="#">이용약관</a></div>
+      <p class="copy">© Your Company. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <a href="#" class="to-top" id="toTop" aria-label="위로 이동">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3h14M12 21V8m-6 6 6-6 6 6"/></svg>
+  </a>
+</div>
+
+<!-- 설정 시트: 전체메뉴 아이콘 3번 연속 탭 -->
+<div class="sheet-dim" id="settingsDim" aria-hidden="true">
+  <form class="sheet" id="settingsForm" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" onsubmit="return false">
+    <div class="sheet-grip"></div>
+    <h2 id="settingsTitle">화면 설정</h2>
+    <p class="sheet-desc">이 브라우저에 저장됩니다.</p>
+
+    <fieldset>
+      <legend>로고</legend>
+      <div class="logo-preview"><span class="logo" id="logoPreview" data-brand></span></div>
+      <div class="field">
+        <span>로고 이미지</span>
+        <div class="file-row">
+          <label class="file-btn">이미지 선택<input type="file" id="logoFile" accept="image/*"></label>
+          <span class="file-name ellipsis" id="logoFileName">기본 로고</span>
+          <button type="button" class="link-btn" id="logoClear" hidden>삭제</button>
+        </div>
+        <span class="hint">PNG·SVG·JPG, 투명 배경 권장 (1.5MB 이하)</span>
+      </div>
+      <label class="field"><span>서비스 이름</span><input type="text" id="brandName" placeholder="서비스24" maxlength="20"></label>
+      <label class="check"><input type="checkbox" id="logoOnly"> 이미지만 표시 (이름 숨김)</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>상단 안내 문구</legend>
+      <label class="check" style="margin-top:0"><input type="checkbox" id="bannerShow"> 안내 문구 표시</label>
+      <label class="field"><span>문구 (이모지 사용 가능)</span><input type="text" id="bannerTextInput" placeholder="🏳️ 이 사이트는 레이아웃 템플릿입니다." maxlength="60"></label>
+      <div class="color-row">
+        <label class="field"><span>배경색</span><input type="color" id="bannerBg"></label>
+        <label class="field"><span>글자색</span><input type="color" id="bannerColor"></label>
+      </div>
+      <label class="field"><span>누르면 열 주소 (선택)</span><input type="text" id="bannerLink" placeholder="비우면 링크 없음"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>바로가기 버튼</legend>
+      <label class="field"><span>버튼 문구</span><input type="text" id="scText" placeholder="내 페이지 바로가기" maxlength="40"></label>
+      <label class="field"><span>아이콘 (이모지, 비우면 기본 아이콘)</span><input type="text" id="scEmoji" placeholder="예: 📄" maxlength="8"></label>
+      <label class="field"><span>연결할 HTML 경로 또는 주소</span><input type="text" id="scLink" placeholder="예: page.html 또는 https://..."></label>
+      <div class="field">
+        <span>또는 HTML 파일 직접 선택</span>
+        <div class="file-row">
+          <label class="file-btn">파일 선택<input type="file" id="scFile" accept=".html,.htm,text/html"></label>
+          <span class="file-name ellipsis" id="scFileName">선택 안 함</span>
+          <button type="button" class="link-btn" id="scFileClear" hidden>삭제</button>
+        </div>
+        <span class="hint">파일을 선택하면 경로보다 우선합니다. 경로는 index.html과 같은 폴더 기준입니다.</span>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>홈 화면 아이콘 (iOS)</legend>
+      <div class="home-preview">
+        <span class="home-preview-icon" id="homeIconPreview"></span>
+        <span class="home-preview-name ellipsis" id="homeTitlePreview"></span>
+      </div>
+      <div class="field">
+        <span>아이콘 이미지</span>
+        <div class="file-row">
+          <label class="file-btn">이미지 선택<input type="file" id="homeIconFile" accept="image/*"></label>
+          <span class="file-name ellipsis" id="homeIconFileName">선택 안 함</span>
+          <button type="button" class="link-btn" id="homeIconClear" hidden>삭제</button>
+        </div>
+        <span class="hint">정사각형이 아니면 가운데를 잘라 써요. 5MB 이하</span>
+      </div>
+      <label class="field"><span>또는 이모지 (이미지가 없을 때 사용)</span><input type="text" id="homeIconEmoji" placeholder="예: 🏠" maxlength="8"></label>
+      <div class="color-row">
+        <label class="field"><span>배경색</span><input type="color" id="homeIconBg"></label>
+        <label class="check" style="align-self:end;height:44px;margin:0"><input type="checkbox" id="homeIconPad"> 여백 넣기</label>
+      </div>
+      <label class="field"><span>홈 화면 이름</span><input type="text" id="homeTitle" placeholder="비우면 페이지 제목 사용" maxlength="12"></label>
+      <span class="hint">Safari 공유 버튼 → ‘홈 화면에 추가’를 누르면 이 아이콘이 쓰여요. 이미 추가한 아이콘은 지우고 다시 추가해야 바뀌어요.</span>
+    </fieldset>
+
+    <fieldset>
+      <legend>간편 비밀번호</legend>
+      <p class="pin-status" id="pinStatus"></p>
+      <div class="pin-actions">
+        <button type="button" class="btn-small" id="pinSet">비밀번호 설정</button>
+        <button type="button" class="btn-small danger" id="pinRemove" hidden>해제</button>
+      </div>
+      <span class="hint">설정하면 바로가기 버튼과 이 설정창을 열 때 6자리 비밀번호를 물어봐요. 5번 틀리면 30초 동안 입력이 잠겨요.</span>
+    </fieldset>
+
+    <div class="sheet-actions">
+      <button type="button" class="btn-reset" id="settingsReset">초기화</button>
+      <button type="button" class="btn-ghost" id="settingsCancel">닫기</button>
+      <button type="button" class="btn-primary" id="settingsSave">저장</button>
+    </div>
+  </form>
+</div>
+<!-- 간편 비밀번호 키패드 -->
+<div class="pin" id="pinPad" role="dialog" aria-modal="true" aria-labelledby="pinTitle" aria-hidden="true">
+  <div class="pin-panel">
+    <div class="pin-top">
+      <button type="button" class="pin-close" id="pinClose" aria-label="닫기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+    <div class="pin-body">
+      <div class="pin-lock">🔒</div>
+      <h2 id="pinTitle">간편 비밀번호 입력</h2>
+      <p class="pin-sub" id="pinSub" aria-live="polite"></p>
+      <div class="pin-dots" id="pinDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="pin-keypad" id="pinKeypad"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // 생활가이드 데이터 — 여기만 바꾸면 탭/목록이 갱신됩니다
+  const GUIDES = [
+    { label: '가족교육', icon: '👨‍👩‍👧', items: ['가족관계교육이 궁금하거나 가족센터서비스를 이용하고 싶다면', '임신·출산·육아에 대한 믿을 수 있는 정보가 필요하다면', '가족 상담 프로그램을 찾고 있다면'] },
+    { label: '보건•복지', icon: '❤️', items: ['건강검진 대상인지 확인하고 싶다면', '복지 급여 신청 방법이 궁금하다면'] },
+    { label: '이사', icon: '🏠', items: ['전입신고를 온라인으로 하고 싶다면', '이사 후 주소 변경을 한 번에 하고 싶다면'] },
+    { label: '사망', icon: '🌼', items: ['사망신고 절차가 궁금하다면', '상속 재산 조회가 필요하다면'] },
+    { label: '육아', icon: '🚼', items: ['아동수당 신청 방법이 궁금하다면', '어린이집 입소 대기를 신청하려면'] },
+    { label: '결혼', icon: '💍', items: ['혼인신고 방법이 궁금하다면', '신혼부부 주거 지원을 찾고 있다면'] },
+    { label: '임신•출산', icon: '🤰', items: ['출생신고를 하려면', '임신·출산 진료비 지원이 궁금하다면'] },
+  ];
+
+  const tabsEl = document.getElementById('guideTabs');
+  const listEl = document.getElementById('guideList');
+  const moreBtn = document.getElementById('moreBtn');
+  const chevron = '<svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m8 5 5 5-5 5"/></svg>';
+  let active = 0;
+
+  // 탭 버튼은 한 번만 만들고, 이후에는 상태만 바꿔서 포커스가 유지되게
+  tabsEl.innerHTML = GUIDES.map((g, i) => `
+    <button type="button" role="tab" class="g-tab" data-i="${i}">
+      <span class="g-ico"><span><i>${g.icon}</i></span></span>
+      <span class="label">${g.label}</span>
+    </button>`).join('');
+  const tabEls = [...tabsEl.children];
+
+  function render() {
+    tabEls.forEach((b, i) => {
+      b.classList.toggle('active', i === active);
+      b.setAttribute('aria-selected', i === active);
+    });
+    const open = moreBtn.getAttribute('aria-expanded') === 'true';
+    listEl.classList.toggle('open', open);
+    listEl.innerHTML = GUIDES[active].items.map((t, i) => `
+      <a href="#" class="guide-item${!open && i > 1 ? ' hidden' : ''}"><span class="ellipsis">${t}</span>${chevron}</a>`).join('');
+    moreBtn.style.display = GUIDES[active].items.length > 1 ? '' : 'none';
+  }
+
+  tabsEl.addEventListener('click', e => {
+    const b = e.target.closest('.g-tab'); if (!b) return;
+    active = +b.dataset.i;
+    moreBtn.setAttribute('aria-expanded', 'false');
+    moreBtn.firstChild.textContent = '더보기';
+    render();
+  });
+  moreBtn.addEventListener('click', () => {
+    const open = moreBtn.getAttribute('aria-expanded') !== 'true';
+    moreBtn.setAttribute('aria-expanded', open);
+    moreBtn.firstChild.textContent = open ? '접기' : '더보기';
+    render();
+  });
+  render();
+
+  const relatedBtn = document.getElementById('relatedBtn');
+  relatedBtn.addEventListener('click', () => {
+    const open = relatedBtn.getAttribute('aria-expanded') !== 'true';
+    relatedBtn.setAttribute('aria-expanded', open);
+    document.getElementById('relatedPanel').classList.toggle('open', open);
+  });
+
+  const toTop = document.getElementById('toTop');
+  addEventListener('scroll', () => toTop.classList.toggle('show', scrollY > 300), { passive: true });
+  toTop.addEventListener('click', e => { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  /* ---------- 사용자 설정 (로고 / 안내 문구 / 바로가기) ---------- */
+  const STORE_KEY = 'mobile-home-settings';
+  const $ = id => document.getElementById(id);
+  const toastEl = $('toast');
+  let toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2000);
+  }
+
+  // localStorage가 막힌 환경(data: URL, 일부 file://)에서는 window.name에 보관 —
+  // 같은 탭에서 새로고침하는 동안은 유지됩니다.
+  const NAME_PREFIX = 'mobile-home:';
+  function nameBag() {
+    try { return window.name.startsWith(NAME_PREFIX) ? JSON.parse(window.name.slice(NAME_PREFIX.length)) : {}; }
+    catch { return {}; }
+  }
+  function writeNameBag(bag) {
+    window.name = Object.keys(bag).length ? NAME_PREFIX + JSON.stringify(bag) : '';
+  }
+  const store = {
+    get(key) {
+      try {
+        const v = localStorage.getItem(key);
+        if (v !== null) return JSON.parse(v);
+      } catch {}
+      return nameBag()[key] ?? null;
+    },
+    // true: 저장됨 / 'session': 이 탭에서만 유지 / 'quota': 용량 초과
+    set(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (err) {
+        if (err && err.name === 'QuotaExceededError') return 'quota';
+        writeNameBag({ ...nameBag(), [key]: value });
+        return 'session';
+      }
+    },
+    remove(key) {
+      try { localStorage.removeItem(key); } catch {}
+      const bag = nameBag();
+      if (key in bag) { delete bag[key]; writeNameBag(bag); }
+    },
+  };
+
+  const loadSettings = () => store.get(STORE_KEY) || {};
+  const saveSettings = s => store.set(STORE_KEY, s);
+  const clearSettings = () => store.remove(STORE_KEY);
+
+  let settings = loadSettings();
+  let draft = {};
+
+  // 로고: 각 로고 위치의 기본 마크업을 기억해 두고, 설정이 없으면 그대로 복원
+  const brandEls = [...document.querySelectorAll('[data-brand]')];
+  const headerBrandDefault = brandEls[0].innerHTML;
+  brandEls.forEach(el => { el.dataset.default = el.innerHTML || headerBrandDefault; });
+
+  function renderBrand(el, s) {
+    el.innerHTML = '';
+    if (s.logoSrc) {
+      const img = document.createElement('img');
+      img.className = 'logo-img';
+      img.src = s.logoSrc;
+      img.alt = s.brandName || '로고';
+      el.appendChild(img);
+    } else {
+      el.insertAdjacentHTML('beforeend', '<span class="logo-mark"></span>');
+    }
+    if (s.logoSrc && s.logoOnly) return;
+    if (s.brandName) {
+      const t = document.createElement('span');
+      t.className = 'logo-text';
+      t.textContent = s.brandName;
+      el.appendChild(t);
+    } else {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = el.dataset.default;
+      const def = tmp.querySelector('.logo-text');
+      if (def) el.appendChild(def);
+    }
+  }
+
+  // 링크 주소에 javascript: 같은 스크립트 실행 주소는 쓰지 않음
+  const safeUrl = u => (u && !/^\s*(javascript|vbscript):/i.test(u)) ? u : '';
+
+  // 바로가기 버튼
+  const shortcut = $('shortcut');
+  const SHORTCUT_DEFAULT = $('shortcutText').textContent;
+  let shortcutBlobUrl = null;
+
+  function applyShortcut(s) {
+    $('shortcutText').textContent = s.scText || SHORTCUT_DEFAULT;
+    const emoji = s.scEmoji || '';
+    $('shortcutEmoji').textContent = emoji;
+    $('shortcutEmoji').hidden = !emoji;
+    $('shortcutIcon').style.display = emoji ? 'none' : '';
+    if (shortcutBlobUrl) { URL.revokeObjectURL(shortcutBlobUrl); shortcutBlobUrl = null; }
+    if (s.scHtml) shortcutBlobUrl = URL.createObjectURL(new Blob([s.scHtml], { type: 'text/html' }));
+    shortcut.href = shortcutBlobUrl || safeUrl(s.scLink) || '#';
+  }
+
+  shortcut.addEventListener('click', async e => {
+    if (shortcut.getAttribute('href') === '#') {
+      e.preventDefault();
+      toast('전체메뉴를 3번 눌러 연결할 HTML을 지정하세요.');
+      return;
+    }
+    if (!hasPin()) return;  // 비밀번호가 없으면 그대로 이동
+    e.preventDefault();
+    if (await verifyPin('간편 비밀번호 입력')) location.href = shortcut.href;
+  });
+
+  // 상단 배너
+  const banner = $('topBanner');
+  const BANNER_DEFAULT = $('bannerText').textContent;
+  const BANNER_BG = '#ffffff', BANNER_COLOR = '#464c53';
+
+  function applyBanner(s) {
+    banner.hidden = !!s.bannerHidden;
+    $('bannerText').textContent = s.bannerText || BANNER_DEFAULT;
+    banner.style.background = s.bannerBg || '';
+    banner.style.color = s.bannerColor || '';
+    if (safeUrl(s.bannerLink)) banner.href = s.bannerLink;
+    else banner.removeAttribute('href');
+  }
+
+  // iOS 홈 화면 아이콘: Safari는 '홈 화면에 추가'를 누르는 순간의 apple-touch-icon을 읽습니다
+  function setHeadTag(selector, create, attr, value) {
+    let el = document.head.querySelector(selector);
+    if (!value) return el?.remove();
+    if (!el) { el = create(); document.head.appendChild(el); }
+    el.setAttribute(attr, value);
+  }
+  function applyHomeIcon(s) {
+    setHeadTag('link[rel="apple-touch-icon"]', () => Object.assign(document.createElement('link'), { rel: 'apple-touch-icon' }), 'href', s.homeIcon);
+    setHeadTag('meta[name="apple-mobile-web-app-title"]', () => Object.assign(document.createElement('meta'), { name: 'apple-mobile-web-app-title' }), 'content', s.homeTitle);
+  }
+
+  function applyAll(s) {
+    brandEls.filter(el => el.id !== 'logoPreview').forEach(el => renderBrand(el, s));
+    applyShortcut(s);
+    applyBanner(s);
+    applyHomeIcon(s);
+  }
+  applyAll(settings);
+
+  // 설정 시트 열기: 전체메뉴 아이콘 3번 연속 탭
+  const dim = $('settingsDim');
+  let tapCount = 0, tapTimer;
+  $('menuBtn').addEventListener('click', () => {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 3) { tapCount = 0; openSettings(); return; }
+    tapTimer = setTimeout(() => { tapCount = 0; }, 500);
+  });
+
+  function syncForm() {
+    $('brandName').value = draft.brandName || '';
+    $('logoOnly').checked = !!draft.logoOnly;
+    $('logoOnly').disabled = !draft.logoSrc;
+    $('logoFileName').textContent = draft.logoSrc ? (draft.logoFileName || '사용자 로고') : '기본 로고';
+    $('logoClear').hidden = !draft.logoSrc;
+    $('bannerShow').checked = !draft.bannerHidden;
+    $('bannerTextInput').value = draft.bannerText || '';
+    $('bannerBg').value = draft.bannerBg || BANNER_BG;
+    $('bannerColor').value = draft.bannerColor || BANNER_COLOR;
+    $('bannerLink').value = draft.bannerLink || '';
+    $('scText').value = draft.scText || '';
+    $('scEmoji').value = draft.scEmoji || '';
+    $('scLink').value = draft.scLink || '';
+    $('scFileName').textContent = draft.scHtml ? draft.scHtmlName : '선택 안 함';
+    $('scFileClear').hidden = !draft.scHtml;
+    $('homeIconFileName').textContent = draft.homeIconImg ? (draft.homeIconFileName || '사용자 이미지') : '선택 안 함';
+    $('homeIconClear').hidden = !draft.homeIconImg;
+    $('homeIconEmoji').value = draft.homeIconEmoji || '';
+    $('homeIconBg').value = draft.homeIconBg || HOME_ICON_BG;
+    $('homeIconPad').checked = !!draft.homeIconPad;
+    $('homeTitle').value = draft.homeTitle || '';
+    renderHomePreview();
+    renderBrand($('logoPreview'), draft);
+    syncPinStatus();
+  }
+
+  async function openSettings() {
+    if (hasPin() && !(await verifyPin('설정을 열려면 비밀번호 입력'))) return;
+    draft = { ...settings };
+    syncForm();
+    dim.classList.add('open');
+    dim.setAttribute('aria-hidden', 'false');
+  }
+  function closeSettings() {
+    dim.classList.remove('open');
+    dim.setAttribute('aria-hidden', 'true');
+    applyBanner(settings);  // 저장하지 않은 미리보기 되돌리기
+  }
+
+  function readFile(file, as) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      as === 'text' ? r.readAsText(file) : r.readAsDataURL(file);
+    });
+  }
+
+  $('logoFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    if (f.size > 1.5 * 1024 * 1024) return toast('1.5MB 이하 이미지를 선택해 주세요.');
+    draft.logoSrc = await readFile(f);
+    draft.logoFileName = f.name;
+    syncForm();
+  });
+  $('logoClear').addEventListener('click', () => { delete draft.logoSrc; delete draft.logoFileName; draft.logoOnly = false; syncForm(); });
+  $('brandName').addEventListener('input', e => { draft.brandName = e.target.value.trim(); renderBrand($('logoPreview'), draft); });
+  $('logoOnly').addEventListener('change', e => { draft.logoOnly = e.target.checked; renderBrand($('logoPreview'), draft); });
+
+  // 배너는 입력하는 즉시 미리 반영되고, 닫기를 누르면 저장된 값으로 되돌아갑니다
+  const previewBanner = () => applyBanner(draft);
+  $('bannerShow').addEventListener('change', e => { draft.bannerHidden = !e.target.checked; previewBanner(); });
+  $('bannerTextInput').addEventListener('input', e => { draft.bannerText = e.target.value.trim(); previewBanner(); });
+  $('bannerBg').addEventListener('input', e => { draft.bannerBg = e.target.value; previewBanner(); });
+  $('bannerColor').addEventListener('input', e => { draft.bannerColor = e.target.value; previewBanner(); });
+  $('bannerLink').addEventListener('input', e => { draft.bannerLink = e.target.value.trim(); });
+
+  $('scText').addEventListener('input', e => { draft.scText = e.target.value.trim(); });
+  $('scEmoji').addEventListener('input', e => { draft.scEmoji = e.target.value.trim(); });
+  $('scLink').addEventListener('input', e => { draft.scLink = e.target.value.trim(); });
+  $('scFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) return toast('2MB 이하 HTML 파일을 선택해 주세요.');
+    draft.scHtml = await readFile(f, 'text');
+    draft.scHtmlName = f.name;
+    syncForm();
+  });
+  $('scFileClear').addEventListener('click', () => { delete draft.scHtml; delete draft.scHtmlName; syncForm(); });
+
+  // 홈 화면 아이콘 — 원본은 180×180 정사각형으로 잘라 두고(homeIconImg),
+  // 배경색·여백을 합친 최종 PNG(homeIcon)를 apple-touch-icon으로 씁니다.
+  // iOS는 투명한 부분을 검게 칠하므로 항상 배경색을 깔아 줍니다.
+  const HOME_ICON_SIZE = 180, HOME_ICON_BG = '#ffffff';
+  const loadImage = src => new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+  function iconCanvas() {
+    const c = document.createElement('canvas');
+    c.width = c.height = HOME_ICON_SIZE;
+    return [c, c.getContext('2d')];
+  }
+  async function cropSquare(src) {
+    const img = await loadImage(src);
+    const w = img.naturalWidth || HOME_ICON_SIZE, h = img.naturalHeight || HOME_ICON_SIZE;  // 크기 정보 없는 SVG 대비
+    const side = Math.min(w, h);
+    const [c, ctx] = iconCanvas();
+    ctx.drawImage(img, (w - side) / 2, (h - side) / 2, side, side, 0, 0, HOME_ICON_SIZE, HOME_ICON_SIZE);
+    return c.toDataURL('image/png');
+  }
+  async function composeHomeIcon(d) {
+    if (!d.homeIconImg && !d.homeIconEmoji) return '';
+    const S = HOME_ICON_SIZE;
+    const [c, ctx] = iconCanvas();
+    ctx.fillStyle = d.homeIconBg || HOME_ICON_BG;
+    ctx.fillRect(0, 0, S, S);
+    if (d.homeIconImg) {
+      const inset = d.homeIconPad ? S * 0.15 : 0;
+      ctx.drawImage(await loadImage(d.homeIconImg), inset, inset, S - inset * 2, S - inset * 2);
+    } else {
+      ctx.font = `${d.homeIconPad ? 88 : 116}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(d.homeIconEmoji, S / 2, S / 2 + S * 0.04);
+    }
+    return c.toDataURL('image/png');
+  }
+
+  function renderHomePreview() {
+    const box = $('homeIconPreview');
+    box.textContent = '';
+    if (draft.homeIcon) {
+      const img = document.createElement('img');
+      img.src = draft.homeIcon;
+      img.alt = '';
+      box.appendChild(img);
+    } else {
+      box.textContent = '기본\n(화면 캡처)';
+    }
+    $('homeTitlePreview').textContent = draft.homeTitle || document.title;
+  }
+
+  // 빠르게 여러 번 바꿔도 마지막 변경만 반영되도록 순번으로 구분
+  let homeIconJob = Promise.resolve(), homeIconSeq = 0;
+  function updateHomeIcon() {
+    const seq = ++homeIconSeq;
+    const target = draft;
+    homeIconJob = composeHomeIcon({ ...target }).then(url => {
+      if (seq !== homeIconSeq) return;
+      if (url) target.homeIcon = url; else delete target.homeIcon;
+      renderHomePreview();
+    }).catch(() => toast('아이콘을 만들지 못했어요. 다른 이미지를 선택해 주세요.'));
+    return homeIconJob;
+  }
+
+  $('homeIconFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) return toast('5MB 이하 이미지를 선택해 주세요.');
+    try {
+      draft.homeIconImg = await cropSquare(await readFile(f));
+    } catch {
+      return toast('이미지를 읽지 못했어요. 다른 파일을 선택해 주세요.');
+    }
+    draft.homeIconFileName = f.name;
+    syncForm();
+    updateHomeIcon();
+  });
+  $('homeIconClear').addEventListener('click', () => {
+    delete draft.homeIconImg; delete draft.homeIconFileName;
+    syncForm();
+    updateHomeIcon();
+  });
+  $('homeIconEmoji').addEventListener('input', e => { draft.homeIconEmoji = e.target.value.trim(); updateHomeIcon(); });
+  $('homeIconBg').addEventListener('input', e => { draft.homeIconBg = e.target.value; updateHomeIcon(); });
+  $('homeIconPad').addEventListener('change', e => { draft.homeIconPad = e.target.checked; updateHomeIcon(); });
+  $('homeTitle').addEventListener('input', e => { draft.homeTitle = e.target.value.trim(); renderHomePreview(); });
+
+  $('settingsSave').addEventListener('click', async () => {
+    await homeIconJob;  // 아이콘 합성이 끝난 뒤 저장
+    const result = saveSettings(draft);
+    if (result === 'quota') return toast('저장 공간이 부족해요. 더 작은 파일을 사용해 주세요.');
+    settings = { ...draft };
+    applyAll(settings);
+    closeSettings();
+    toast(result === true ? '저장했어요.' : '적용했어요. 이 탭에서만 유지돼요 (브라우저 저장소가 막혀 있음).');
+  });
+  $('settingsReset').addEventListener('click', () => {
+    if (!confirm('로고, 안내 문구, 바로가기, 홈 화면 아이콘 설정을 기본값으로 되돌릴까요?')) return;
+    clearSettings();
+    settings = {};
+    applyAll(settings);
+    closeSettings();
+    toast('기본값으로 되돌렸어요.');
+  });
+  $('settingsCancel').addEventListener('click', closeSettings);
+  dim.addEventListener('click', e => { if (e.target === dim) closeSettings(); });
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && dim.classList.contains('open') && !$('pinPad').classList.contains('open')) closeSettings();
+  });
+
+  /* ---------- 간편 비밀번호 ---------- */
+  // 브라우저 안에서만 확인하는 잠금입니다. 비밀번호 원문은 저장하지 않고 salt를 섞은 해시만 저장합니다.
+  const PIN_KEY = 'mobile-home-pin';
+  const PIN_FAIL_KEY = 'mobile-home-pin-fail';
+  const PIN_LEN = 6, MAX_FAILS = 5, LOCK_SECONDS = 30;
+  const hasPin = () => !!store.get(PIN_KEY);
+
+  async function hashPin(pin, salt, algo) {
+    const data = new TextEncoder().encode(salt + ':' + pin);
+    if (algo === 'sha256') {
+      const buf = await crypto.subtle.digest('SHA-256', data);
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    // crypto.subtle을 쓸 수 없는 환경(보안 컨텍스트 아님)용 대체 해시
+    let h = 0x811c9dc5;
+    for (const b of data) { h ^= b; h = Math.imul(h, 0x01000193); }
+    return (h >>> 0).toString(16);
+  }
+
+  // 같은 숫자 반복(111111), 연속 숫자(123456, 654321) 금지
+  function isWeakPin(p) {
+    return /^(\d)\1+$/.test(p) || '01234567890123'.includes(p) || '98765432109876'.includes(p);
+  }
+
+  const pad = (() => {
+    const root = $('pinPad'), titleEl = $('pinTitle'), subEl = $('pinSub');
+    const dotsEl = $('pinDots'), keypad = $('pinKeypad');
+    const dots = [...dotsEl.children];
+    const backIcon = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5h11v14H9l-6-7z"/><path d="m12 9 5 6m0-6-5 6"/></svg>';
+    let buf = '', resolve = null, lockTimer = null;
+
+    // 비밀번호를 입력할 때마다(매 시도) 숫자 배열을 새로 섞어서 어깨너머로 보기 어렵게
+    function renderKeys() {
+      const nums = [...'0123456789'];
+      for (let i = nums.length - 1; i > 0; i--) {
+        const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+      }
+      const slots = [...nums.slice(0, 9), 'empty', nums[9], 'back'];
+      keypad.innerHTML = slots.map(k =>
+        k === 'empty'   ? '<span aria-hidden="true"></span>' :
+        k === 'back'    ? `<button type="button" class="pin-key fn" data-k="back" aria-label="지우기">${backIcon}</button>` :
+                          `<button type="button" class="pin-key" data-k="${k}">${k}</button>`
+      ).join('');
+    }
+    const paint = () => dots.forEach((d, i) => d.classList.toggle('on', i < buf.length));
+    const isOpen = () => root.classList.contains('open');
+
+    function show() {
+      if (isOpen()) return;
+      root.classList.add('open');
+      root.setAttribute('aria-hidden', 'false');
+    }
+    function setText(title, sub, isError) {
+      titleEl.textContent = title;
+      subEl.textContent = sub || '';
+      subEl.classList.toggle('error', !!isError);
+    }
+    function shake() {
+      dotsEl.classList.remove('shake');
+      void dotsEl.offsetWidth;
+      dotsEl.classList.add('shake');
+      navigator.vibrate?.([30, 40, 30]);
+    }
+    function settle(value) {
+      const r = resolve;
+      resolve = null;
+      r?.(value);
+    }
+
+    function press(k) {
+      if (!resolve || keypad.classList.contains('disabled') || buf.length >= PIN_LEN) return;
+      if (k === 'back') { buf = buf.slice(0, -1); return paint(); }
+      buf += k;
+      paint();
+      navigator.vibrate?.(8);
+      if (buf.length === PIN_LEN) {
+        const value = buf;
+        setTimeout(() => settle(value), 120);  // 마지막 점이 채워지는 걸 보여준 뒤 확인
+      }
+    }
+
+    function close() {
+      clearInterval(lockTimer);
+      keypad.classList.remove('disabled');
+      root.classList.remove('open');
+      root.setAttribute('aria-hidden', 'true');
+      buf = '';
+      paint();
+    }
+    function cancel() { close(); settle(null); }
+
+    keypad.addEventListener('click', e => {
+      const b = e.target.closest('[data-k]');
+      if (b) press(b.dataset.k);
+    });
+    $('pinClose').addEventListener('click', cancel);
+    addEventListener('keydown', e => {
+      if (!isOpen()) return;
+      if (/^\d$/.test(e.key)) press(e.key);
+      else if (e.key === 'Backspace') press('back');
+      else if (e.key === 'Escape') cancel();
+    });
+
+    return {
+      // 6자리를 다 입력하면 문자열, 닫으면 null
+      ask(title, sub, isError) {
+        show();
+        renderKeys();
+        buf = '';
+        paint();
+        setText(title, sub, isError);
+        if (isError) shake();
+        return new Promise(r => { resolve = r; });
+      },
+      // 잠금 시간이 끝나면 true, 그 전에 닫으면 null
+      lockUntil(until, title) {
+        show();
+        renderKeys();
+        buf = '';
+        paint();
+        keypad.classList.add('disabled');
+        const tick = () => {
+          const left = Math.ceil((until - Date.now()) / 1000);
+          if (left <= 0) {
+            clearInterval(lockTimer);
+            keypad.classList.remove('disabled');
+            settle(true);
+            return;
+          }
+          setText(title, `입력 횟수를 초과했어요. ${left}초 후 다시 시도하세요.`, true);
+        };
+        const p = new Promise(r => { resolve = r; });
+        tick();
+        lockTimer = setInterval(tick, 250);
+        return p;
+      },
+      shake,
+      close,
+    };
+  })();
+
+  async function verifyPin(title) {
+    const rec = store.get(PIN_KEY);
+    if (!rec) return true;
+    if (rec.algo === 'sha256' && !crypto.subtle) {
+      toast('이 방식으로 열면 비밀번호를 확인할 수 없어요. 로컬 서버 주소로 열어 주세요.');
+      return false;
+    }
+    let msg = '6자리 숫자를 입력하세요', isError = false;
+    while (true) {
+      const st = store.get(PIN_FAIL_KEY) || { fails: 0, until: 0 };
+      if (st.until > Date.now()) {
+        if (!(await pad.lockUntil(st.until, title))) return false;
+        store.remove(PIN_FAIL_KEY);
+        msg = '다시 입력하세요';
+        isError = false;
+        continue;
+      }
+      const value = await pad.ask(title, msg, isError);
+      if (value === null) return false;
+      if (await hashPin(value, rec.salt, rec.algo) === rec.hash) {
+        store.remove(PIN_FAIL_KEY);
+        pad.close();
+        return true;
+      }
+      const fails = st.fails + 1;
+      if (fails >= MAX_FAILS) {
+        store.set(PIN_FAIL_KEY, { fails: 0, until: Date.now() + LOCK_SECONDS * 1000 });
+        pad.shake();
+        continue;
+      }
+      store.set(PIN_FAIL_KEY, { fails, until: 0 });
+      msg = `비밀번호가 일치하지 않아요 (${fails}/${MAX_FAILS})`;
+      isError = true;
+    }
+  }
+
+  async function createPin() {
+    let msg = '6자리 숫자를 입력하세요', isError = false;
+    while (true) {
+      const first = await pad.ask('새 비밀번호 설정', msg, isError);
+      if (first === null) return false;
+      if (isWeakPin(first)) {
+        msg = '같은 숫자 반복이나 연속된 숫자는 쓸 수 없어요';
+        isError = true;
+        continue;
+      }
+      const second = await pad.ask('비밀번호 확인', '한 번 더 입력하세요');
+      if (second === null) return false;
+      if (second !== first) {
+        msg = '비밀번호가 서로 달라요. 처음부터 다시 입력하세요';
+        isError = true;
+        continue;
+      }
+      const salt = [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+      const algo = crypto.subtle ? 'sha256' : 'fnv';
+      const result = store.set(PIN_KEY, { salt, algo, hash: await hashPin(first, salt, algo) });
+      store.remove(PIN_FAIL_KEY);
+      pad.close();
+      toast(result === true ? '간편 비밀번호를 설정했어요.' : '설정했어요. 이 탭에서만 유지돼요.');
+      return true;
+    }
+  }
+
+  function syncPinStatus() {
+    const on = hasPin();
+    $('pinStatus').innerHTML = on
+      ? '<b>사용 중</b> · 바로가기와 설정창이 잠겨 있어요.'
+      : '설정 안 됨 · 바로가기 버튼이 바로 열려요.';
+    $('pinSet').textContent = on ? '비밀번호 변경' : '비밀번호 설정';
+    $('pinRemove').hidden = !on;
+  }
+
+  $('pinSet').addEventListener('click', async () => {
+    if (hasPin() && !(await verifyPin('현재 비밀번호 입력'))) return;
+    await createPin();
+    syncPinStatus();
+  });
+  $('pinRemove').addEventListener('click', async () => {
+    if (!(await verifyPin('현재 비밀번호 입력'))) return;
+    store.remove(PIN_KEY);
+    store.remove(PIN_FAIL_KEY);
+    syncPinStatus();
+    toast('간편 비밀번호를 해제했어요.');
+  });
+</script>
+</body>
+</html>
