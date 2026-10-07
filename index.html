@@ -15,10 +15,12 @@
 <style>
   :root {
     --bg: #e6e8fa;
+    --ink: #1d2040;
     --sub: #8d8d96;
     --blue: #0b5be0;
     --track: #e6e8ee;
     --navy: #07173d;
+    --line: #eef0f6;
     --top: env(safe-area-inset-top, 0px);
     --bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -35,34 +37,36 @@
   body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   input, textarea { -webkit-user-select: text; user-select: text; }
   img { -webkit-user-drag: none; pointer-events: none; }
-  .banner { touch-action: manipulation; }
   #cover { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: var(--navy); color: #fff; font-size: 17px; text-align: center; padding: 24px; }
   body.covered #cover { display: flex; }
   @media print { body > * { display: none !important; } body::after { content: '인쇄할 수 없습니다'; } }
 
-  /* ---------- card ---------- */
+  /* ---------- 화면 ---------- */
   .phone {
     position: relative; width: 100%; max-width: 420px; min-height: 100vh; min-height: 100dvh;
     background: var(--bg); display: flex; flex-direction: column; overflow: hidden;
     padding: calc(36px + var(--top)) 16px 0;
   }
-  .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--bg) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
-  .topbar { position: relative; }
-  .tb-in { display: none; height: 100%; align-items: center; gap: 12px; padding: 0 16px; color: #1d2040; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; }
-  .tb-menu { position: absolute; top: var(--top); bottom: 0; right: 16px; display: flex; align-items: center; pointer-events: none; color: #1d2040; }
-  .tb-menu svg { width: 24px; height: 24px; display: block; }
-  .tb-in { padding-right: 56px; }
+
+  /* 상단 바 */
+  .topbar {
+    position: relative; flex: none; box-sizing: content-box;
+    margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top);
+    background: var(--bg) center/100% 100% no-repeat;
+  }
+  .tb-in { display: none; height: 100%; align-items: center; gap: 12px; padding: 0 56px 0 16px; color: var(--ink); font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; }
+  .topbar[data-mode=text] .tb-in { display: flex; }
   .tb-in span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .tb-ic { width: 26px; height: 26px; flex: none; object-fit: contain; }
-  .topbar[data-mode=text] .tb-in { display: flex; }
-  .grp[data-mode=text] .m-image, .grp[data-mode=image] .m-text { display: none; }
-  .seg { display: flex; margin-left: auto; background: #eef0f6; border-radius: 9px; padding: 2px; }
-  .seg button { border: 0; background: transparent; border-radius: 7px; padding: 6px 12px; font-size: 13px; color: #555; cursor: pointer; }
-  .seg button[aria-pressed=true] { background: #fff; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .tb-menu { position: absolute; top: var(--top); bottom: 0; right: 16px; display: flex; align-items: center; pointer-events: none; color: var(--ink); }
+  .tb-menu svg { width: 24px; height: 24px; display: block; }
+
+  /* 카드 */
   .card { margin-bottom: 28px; background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 2px 10px rgba(30,40,120,.08); }
   .photo { display: flex; justify-content: center; padding-top: 26px; }
   .photo img { width: 46%; aspect-ratio: 4/5; object-fit: cover; background: #f1f2f6; display: block; }
   .info { display: flex; justify-content: space-between; align-items: center; padding: 32px 28px 0; gap: 12px; }
+  .info > div:first-child { min-width: 0; }
   .name { font-size: 26px; line-height: 1.2; }
   .birth { font-size: 28px; margin-top: 6px; letter-spacing: .5px; }
   .addr, .addr2 { font-size: 14px; color: var(--sub); }
@@ -73,7 +77,7 @@
   #qr img, #qr canvas { width: 100% !important; height: 100% !important; display: block; }
   #swWrap { display: none; width: 120px; flex: none; justify-content: flex-end; }
 
-  /* detail mode */
+  /* 상세정보 모드 */
   .detail .birth, .detail #qr { display: none; }
   .detail .idline { display: block; }
   .detail .idline + .addr { margin-top: 6px; }
@@ -91,51 +95,69 @@
   .time-row { display: flex; justify-content: space-between; margin-top: 14px; font-size: 17px; color: #555; }
   .hint { text-align: center; font-size: 11px; color: #c4c4cc; padding: 22px 0; }
   .detail-btn { width: 100%; border: 0; background: var(--blue); color: #fff; font-size: 19px; padding: 28px 0; cursor: pointer; }
+
+  /* 하단 배너 (화면 맨 아래 고정) */
   .banner {
-    margin: auto -16px 0; height: calc(62px + var(--bottom)); padding-bottom: var(--bottom); flex: none; overflow: hidden; display: flex; align-items: center;
+    margin: auto -16px 0; height: calc(62px + var(--bottom)); padding-bottom: var(--bottom);
+    flex: none; overflow: hidden; display: flex; align-items: center; touch-action: manipulation;
     background: linear-gradient(90deg, #1ec6f0, #5b8cf0 60%, #9a6fe0); color: #fff; font-size: 17px;
   }
   .banner span { white-space: nowrap; padding-left: 100%; animation: marq 12s linear infinite; }
   @keyframes marq { to { transform: translateX(-100%); } }
-  @media (prefers-reduced-motion: reduce) { .banner span { animation-duration: 40s; } .bar i { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 
-  /* ---------- edit sheet ---------- */
+  /* ---------- 설정 시트 ---------- */
   .panel { position: fixed; inset: 0; background: rgba(15,20,50,.45); display: none; align-items: flex-end; justify-content: center; z-index: 10; }
-  .panel.open { display: flex; }
-  .sheet { width: 100%; max-width: 420px; max-height: 90vh; max-height: 90dvh; background: #f3f4fa; border-radius: 22px 22px 0 0; display: flex; flex-direction: column; animation: up .22s ease-out; }
-  @keyframes up { from { transform: translateY(40px); opacity: 0; } }
-  .sheet-h { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 6px; }
-  .sheet-h h2 { margin: 0; font-size: 18px; }
-  .x { width: 30px; height: 30px; border-radius: 50%; border: 0; background: #e2e4ef; color: #555; font-size: 16px; cursor: pointer; line-height: 1; }
-  .sheet-b { overflow: auto; padding: 0 14px 12px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-  .sheet-f { padding: 10px 14px calc(14px + var(--bottom)); border-top: 1px solid #e2e4ef; background: #f3f4fa; }
-  .gt { margin: 16px 6px 6px; font-size: 12px; font-weight: 600; color: #7a7d92; }
+  .panel.open { display: flex; animation: fade .2s ease-out; }
+  @keyframes fade { from { opacity: 0; } }
+  .sheet { width: 100%; max-width: 420px; max-height: 92vh; max-height: 92dvh; background: #f3f4fa; border-radius: 22px 22px 0 0; display: flex; flex-direction: column; animation: up .25s cubic-bezier(.2,.8,.3,1); }
+  @keyframes up { from { transform: translateY(60px); } }
+  .grab { width: 38px; height: 5px; border-radius: 3px; background: #cdd0de; margin: 8px auto 0; flex: none; }
+  .sheet-h { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px 4px; flex: none; }
+  .sheet-h h2 { margin: 0; font-size: 19px; color: var(--ink); }
+  .x { width: 30px; height: 30px; border-radius: 50%; border: 0; background: #e2e4ef; color: #555; font-size: 15px; cursor: pointer; line-height: 1; }
+  .sheet-b { overflow: auto; padding: 0 14px 16px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .sheet-f { display: flex; gap: 8px; padding: 10px 14px calc(12px + var(--bottom)); border-top: 1px solid #e2e4ef; flex: none; }
+  .gt { margin: 18px 6px 6px; font-size: 12px; font-weight: 700; letter-spacing: .3px; color: #7a7d92; }
   .grp { background: #fff; border-radius: 14px; padding: 0 14px; }
-  .f { display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid #eef0f6; }
+  .f { display: flex; align-items: center; gap: 10px; min-height: 48px; border-bottom: 1px solid var(--line); }
   .f:last-child { border-bottom: 0; }
-  .f > label { flex: 0 0 92px; font-size: 14px; color: #3b3e52; }
+  .f > label { flex: 0 0 88px; font-size: 14px; color: #3b3e52; transition: color .15s; }
+  .f:focus-within > label { color: var(--blue); }
   .f input[type=text] {
     flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 12px 0;
     font: inherit; font-size: 16px; text-align: right; color: #111;
   }
   .f input::placeholder { color: #b5b8c8; }
-  .f .thumb { width: 36px; height: 36px; border-radius: 8px; background: #eef0f6 center/cover no-repeat; margin-left: auto; flex: none; }
+  .unit { font-size: 14px; color: #9a9db0; flex: none; margin-left: -4px; }
+  .thumb { width: 36px; height: 36px; border-radius: 8px; background: #eef0f6 center/cover no-repeat; margin-left: auto; flex: none; border: 1px solid var(--line); }
+  .thumb.wide { width: 64px; background-size: 100% 100%; }
+  .thumb.fit { background-size: contain; }
   .btn { border: 1px solid #d5d7e2; background: #fff; border-radius: 9px; padding: 8px 12px; font-size: 13px; color: #333; cursor: pointer; flex: none; }
+  .btn:disabled { opacity: .35; cursor: default; }
   .btn.danger { color: #d33; }
-  .btn.primary { width: 100%; padding: 14px; font-size: 16px; background: var(--blue); border-color: var(--blue); color: #fff; border-radius: 12px; }
-  .note { font-size: 12px; color: #8a8da2; margin: 6px 6px 0; line-height: 1.4; }
-  .grp textarea { width: 100%; border: 0; outline: 0; resize: none; background: transparent; font-size: 13px; padding: 12px 0; font-family: ui-monospace, Menlo, monospace; color: #444; }
-  .tools { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #eef0f6; }
+  .btn.primary { flex: 1; padding: 14px; font-size: 16px; font-weight: 600; background: var(--blue); border-color: var(--blue); color: #fff; border-radius: 12px; }
+  .btn.ghost { padding: 14px 18px; font-size: 16px; border-radius: 12px; background: #e6e8f2; border-color: transparent; color: #444; }
+  .seg { display: flex; margin-left: auto; background: #eef0f6; border-radius: 9px; padding: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 7px; padding: 6px 12px; font-size: 13px; color: #555; cursor: pointer; }
+  .seg button[aria-pressed=true] { background: #fff; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .grp[data-mode=text] .m-image, .grp[data-mode=image] .m-text { display: none; }
+  .note { font-size: 12px; color: #8a8da2; margin: 6px 6px 0; line-height: 1.45; }
+  .grp textarea { display: block; width: 100%; border: 0; outline: 0; resize: none; background: transparent; font-size: 13px; padding: 12px 0; font-family: ui-monospace, Menlo, monospace; color: #444; }
+  .tools { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); }
   .tools .btn { flex: 1; }
-  .toast { position: fixed; left: 50%; bottom: calc(90px + var(--bottom)); transform: translateX(-50%); background: rgba(20,22,40,.9); color: #fff; padding: 10px 16px; border-radius: 20px; font-size: 14px; z-index: 20; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%; text-align: center; }
+  .foot { text-align: center; font-size: 11px; color: #a3a6b8; margin: 18px 0 2px; }
+  .toast { position: fixed; left: 50%; bottom: calc(96px + var(--bottom)); transform: translateX(-50%); background: rgba(20,22,40,.92); color: #fff; padding: 10px 16px; border-radius: 20px; font-size: 14px; z-index: 20; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90%; text-align: center; }
   .toast.show { opacity: 1; }
   input[type=file] { display: none; }
 </style>
 </head>
 <body>
 <div class="phone">
-  <div class="topbar" id="topbar"><div class="tb-in"><img class="tb-ic" id="tbIcon" alt="" hidden><span id="tbText"></span></div>
-    <div class="tb-menu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div></div>
+  <div class="topbar" id="topbar">
+    <div class="tb-in"><img class="tb-ic" id="tbIcon" alt="" hidden><span id="tbText"></span></div>
+    <div class="tb-menu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div>
+  </div>
 
   <div class="card" id="card">
     <div class="photo"><img id="photo" alt=""></div>
@@ -161,67 +183,68 @@
   <div class="banner" id="banner"><span id="vBanner"></span></div>
 </div>
 
-<div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="내용 편집">
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet">
-    <div class="sheet-h"><h2>내용 편집</h2><button class="x" id="close" aria-label="닫기">✕</button></div>
+    <div class="grab"></div>
+    <div class="sheet-h"><h2 id="sheetTitle">설정</h2><button class="x" id="close" aria-label="닫기">✕</button></div>
     <div class="sheet-b">
-      <div class="gt">상단 바</div>
-      <div class="grp" id="topGrp">
-        <div class="f"><label>표시 방식</label>
-          <div class="seg"><button data-m="text">글자+아이콘</button><button data-m="image">이미지</button></div></div>
-        <div class="f m-text"><label>글자</label><input type="text" id="fTopText" maxlength="40"></div>
-        <div class="f m-text"><label>아이콘</label><div class="thumb" id="pvTopIcon"></div>
-          <button class="btn" id="bTopIcon">변경</button><button class="btn danger" id="clearTopIcon">제거</button></div>
-        <div class="f m-image"><label>이미지</label><div class="thumb" id="pvTop"></div>
-          <button class="btn" id="bTop">변경</button><button class="btn danger" id="clearTop">제거</button></div>
-        <div class="f"><label>바 높이</label><input type="text" id="fTopH" placeholder="px"></div>
+
+      <div class="gt">기본 정보</div>
+      <div class="grp">
+        <div class="f"><label for="fName">이름</label><input type="text" id="fName"></div>
+        <div class="f"><label for="fBirth">생년월일</label><input type="text" id="fBirth" placeholder="00.00.00"></div>
+        <div class="f"><label for="fAddr">주소</label><input type="text" id="fAddr"></div>
       </div>
+
+      <div class="gt">상세정보</div>
+      <div class="grp">
+        <div class="f"><label for="fIdnum">일련번호</label><input type="text" id="fIdnum" placeholder="000000-0000000"></div>
+        <div class="f"><label for="fAddr2">세부주소</label><input type="text" id="fAddr2"></div>
+        <div class="f"><label for="fBtn">표시 버튼</label><input type="text" id="fBtn"></div>
+        <div class="f"><label for="fBtnHide">숨기기 버튼</label><input type="text" id="fBtnHide"></div>
+      </div>
+      <div class="note">스위치를 켜기 전에는 일련번호 뒷부분과 세부주소의 숫자가 *로 가려집니다.</div>
+
       <div class="gt">사진</div>
       <div class="grp">
         <div class="f"><label>사진</label><div class="thumb" id="pvPhoto"></div>
           <button class="btn" id="bPhoto">변경</button><button class="btn danger" id="clearPhoto">제거</button></div>
-        <div class="f"><label>사진 크기(%)</label><input type="text" id="fPhotoW" placeholder="25~80"></div>
+        <div class="f"><label for="fPhotoW">크기</label><input type="text" id="fPhotoW" placeholder="25~80"><span class="unit">%</span></div>
       </div>
-      <input type="file" id="fTopIcon" accept="image/*">
-      <input type="file" id="fTop" accept="image/*"><input type="file" id="fPhoto" accept="image/*">
+
+      <div class="gt">상단 바</div>
+      <div class="grp" id="topGrp">
+        <div class="f"><label>표시 방식</label>
+          <div class="seg"><button data-m="text">글자+아이콘</button><button data-m="image">이미지</button></div></div>
+        <div class="f m-text"><label for="fTopText">글자</label><input type="text" id="fTopText" maxlength="40"></div>
+        <div class="f m-text"><label>아이콘</label><div class="thumb fit" id="pvTopIcon"></div>
+          <button class="btn" id="bTopIcon">변경</button><button class="btn danger" id="clearTopIcon">기본값</button></div>
+        <div class="f m-image"><label>이미지</label><div class="thumb wide" id="pvTop"></div>
+          <button class="btn" id="bTop">변경</button><button class="btn danger" id="clearTop">제거</button></div>
+        <div class="f"><label for="fTopH">높이</label><input type="text" id="fTopH" placeholder="0~200"><span class="unit">px</span></div>
+      </div>
+
+      <div class="gt">QR · 타이머</div>
+      <div class="grp">
+        <div class="f"><label for="fQr">QR 내용</label><input type="text" id="fQr"></div>
+        <div class="f"><label for="fSecs">타이머</label><input type="text" id="fSecs" placeholder="1~3600"><span class="unit">초</span></div>
+        <div class="f"><label for="fTimeLabel">타이머 라벨</label><input type="text" id="fTimeLabel"></div>
+        <div class="f"><label for="fHint">안내 문구</label><input type="text" id="fHint"></div>
+      </div>
+
+      <div class="gt">하단 배너</div>
+      <div class="grp">
+        <div class="f"><label for="fBanner">배너 문구</label><input type="text" id="fBanner"></div>
+      </div>
+      <div class="note">배너를 빠르게 3번 누르면 이 설정 화면이 열립니다.</div>
 
       <div class="gt">홈 화면 아이콘</div>
       <div class="grp">
         <div class="f"><label>앱 아이콘</label><div class="thumb" id="pvIcon"></div>
           <button class="btn" id="bIcon">변경</button><button class="btn danger" id="clearIcon">기본값</button></div>
-        <div class="f"><label>앱 이름</label><input type="text" id="fAppName" maxlength="12" placeholder="ID"></div>
+        <div class="f"><label for="fAppName">앱 이름</label><input type="text" id="fAppName" maxlength="12" placeholder="ID"></div>
       </div>
-      <input type="file" id="fIcon" accept="image/*">
       <div class="note">홈 화면에 <b>추가하기 전에</b> 설정해야 반영됩니다. 이미 추가했다면 앱을 삭제한 뒤 Safari에서 다시 추가하세요.</div>
-
-      <div class="gt">기본 정보</div>
-      <div class="grp">
-        <div class="f"><label>이름</label><input type="text" id="fName"></div>
-        <div class="f"><label>생년월일</label><input type="text" id="fBirth" placeholder="00.00.00"></div>
-        <div class="f"><label>주소</label><input type="text" id="fAddr"></div>
-      </div>
-
-      <div class="gt">상세정보</div>
-      <div class="grp">
-        <div class="f"><label>일련번호</label><input type="text" id="fIdnum" placeholder="000000-0000000"></div>
-        <div class="f"><label>세부주소</label><input type="text" id="fAddr2"></div>
-        <div class="f"><label>표시 버튼</label><input type="text" id="fBtn"></div>
-        <div class="f"><label>숨기기 버튼</label><input type="text" id="fBtnHide"></div>
-      </div>
-      <div class="note">스위치를 켜기 전에는 일련번호 뒷부분과 세부주소의 숫자가 *로 가려집니다.</div>
-
-      <div class="gt">QR · 타이머</div>
-      <div class="grp">
-        <div class="f"><label>QR 내용</label><input type="text" id="fQr"></div>
-        <div class="f"><label>타이머</label><input type="text" id="fSecs" placeholder="초"></div>
-        <div class="f"><label>타이머 라벨</label><input type="text" id="fTimeLabel"></div>
-        <div class="f"><label>안내 문구</label><input type="text" id="fHint"></div>
-      </div>
-
-      <div class="gt">배너</div>
-      <div class="grp">
-        <div class="f"><label>배너 문구</label><input type="text" id="fBanner"></div>
-      </div>
 
       <div class="gt">백업 · 초기화</div>
       <div class="grp">
@@ -233,11 +256,20 @@
         </div>
       </div>
       <div class="note">홈 화면 앱은 Safari와 저장 공간이 달라서, 처음 옮길 때는 내보내기 → 가져오기를 사용하세요.</div>
+      <div class="foot" id="usage"></div>
+
+      <input type="file" id="fPhoto" accept="image/*">
+      <input type="file" id="fTopIcon" accept="image/*">
+      <input type="file" id="fTop" accept="image/*">
+      <input type="file" id="fIcon" accept="image/*">
     </div>
-    <div class="sheet-f"><button class="btn primary" id="save">저장</button></div>
+    <div class="sheet-f">
+      <button class="btn ghost" id="cancel">취소</button>
+      <button class="btn primary" id="save">저장</button>
+    </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 <div id="cover">캡쳐방지 시스템이 작동 중입니다</div>
 
 <script>
@@ -248,12 +280,20 @@ const DEFAULTS = {
   name: '홍길동', birth: '00.01.01', addr: '서울특별시 OO구', addr2: 'OO아파트 101동 101호',
   idnum: '000000-0000000', btn: '상세정보 표시', btnHide: '상세정보 숨기기',
   qr: 'SAMPLE-ID-0000', secs: 30, timeLabel: '남은시간', hint: 'QR코드를 리더기에 스캔하세요',
-  banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지', photo: '', topimg: '', topH: 36,
-  icon: '', appName: 'ID',
-  photoW: 46, topMode: 'text', topText: '주민등록증 모바일 확인 서비스', topIcon: ''
+  banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지',
+  photo: '', photoW: 46,
+  topMode: 'text', topText: '주민등록증 모바일 확인 서비스', topIcon: '', topimg: '', topH: 36,
+  icon: '', appName: 'ID'
 };
 const IMG_KEYS = ['photo', 'topimg', 'icon', 'topIcon'];
+const RANGE = { secs: [1, 3600], photoW: [25, 80], topH: [0, 200] }; // 숫자 항목의 허용 범위
 
+/* ---------- 데이터 ---------- */
+// 숫자 보정: 숫자가 아니면 기본값, 범위를 벗어나면 끝값으로
+function num(v, k) {
+  const [lo, hi] = RANGE[k], n = Math.round(Number(v));
+  return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : DEFAULTS[k];
+}
 // 저장/백업 데이터 검증: 알려진 키와 타입만 허용, 이미지는 data:image 만 허용
 function sanitize(src) {
   const out = Object.assign({}, DEFAULTS);
@@ -265,18 +305,50 @@ function sanitize(src) {
     if (IMG_KEYS.includes(k) && v && !v.startsWith('data:image/')) continue;
     out[k] = v;
   }
-  out.secs = Math.min(3600, Math.max(1, Math.round(out.secs) || DEFAULTS.secs));
-  out.photoW = Math.min(80, Math.max(25, Math.round(out.photoW) || DEFAULTS.photoW));
+  for (const k in RANGE) out[k] = num(out[k], k);
   out.topMode = out.topMode === 'image' ? 'image' : 'text';
-  out.topH = Math.min(200, Math.max(0, Math.round(out.topH) || 0));
   return out;
 }
 let data;
 try { data = sanitize(JSON.parse(localStorage.getItem('idcard'))); } catch (e) { data = sanitize(); }
-let draft = data, showDetail = false, revealed = false, endAt = 0, timer;
+let draft = data, showDetail = false, revealed = false;
+
+function persist() {
+  try { localStorage.setItem('idcard', JSON.stringify(data)); return true; }
+  catch (e) { toast('저장 공간이 부족합니다. 더 작은 이미지를 사용하세요.'); return false; }
+}
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+
+let toastT;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- 기본 이미지 파일 ---------- */
+// 폴더에 banner-img.* / icon-img.* 가 있으면 각각 상단 바 아이콘 / 앱 아이콘의 기본값으로 사용
+const assets = { banner: '', icon: '' };
+// 지난번에 찾은 확장자를 기억해 먼저 시도 (없는 파일 요청을 줄임)
+function findAsset(base) {
+  const key = 'asset:' + base;
+  let last = ''; try { last = localStorage.getItem(key) || ''; } catch (e) {}
+  const exts = [...new Set([last, 'png', 'svg', 'webp', 'jpg', 'jpeg'].filter(Boolean))];
+  return new Promise(res => {
+    let i = 0;
+    const next = () => {
+      if (i >= exts.length) return res('');
+      const ext = exts[i++], u = base + '.' + ext, im = new Image();
+      im.onload = () => { try { localStorage.setItem(key, ext); } catch (e) {} res(u); };
+      im.onerror = next; im.src = u;
+    };
+    next();
+  });
+}
 
 /* ---------- 렌더링 ---------- */
+const bg = u => u ? 'url("' + u + '")' : 'none';
 function maskId(t) { return Array.from(t).map((c, i) => (i >= 8 && /\d/.test(c)) ? '*' : c).join(''); }
+
 function applyDetail() {
   $('card').classList.toggle('detail', showDetail);
   $('sw').setAttribute('aria-checked', revealed);
@@ -284,38 +356,32 @@ function applyDetail() {
   $('vAddr2').textContent = revealed ? data.addr2 : data.addr2.replace(/\d/g, '*');
   $('vBtn').textContent = showDetail ? data.btnHide : data.btn;
 }
-// 폴더에 banner-img.* / icon-img.* 파일이 있으면 각각 상단 바 아이콘 / 앱 아이콘의 기본값으로 사용
-const assets = { banner: '', icon: '' };
-function findAsset(base) {
-  const exts = ['png', 'webp', 'jpg', 'jpeg', 'svg'];
-  return new Promise(res => {
-    let i = 0;
-    const next = () => {
-      if (i >= exts.length) return res('');
-      const u = base + '.' + exts[i++], im = new Image();
-      im.onload = () => res(u); im.onerror = next; im.src = u;
-    };
-    next();
-  });
-}
 // 홈 화면에 추가할 때 쓰이는 아이콘/이름 (추가하기 전에 설정해야 반영됨)
 function applyIcon() {
   let l = document.querySelector('link[rel="apple-touch-icon"]');
   if (!l) { l = document.createElement('link'); l.rel = 'apple-touch-icon'; document.head.appendChild(l); }
   l.href = data.icon || assets.icon || 'icon-180.png';
-  const name = data.appName.trim() || 'ID';
   const m = document.querySelector('meta[name="apple-mobile-web-app-title"]');
-  if (m) m.content = name;
+  if (m) m.content = data.appName.trim() || 'ID';
 }
-function applyTop(o) {
-  const t = $('topbar'), text = o.topMode === 'text';
+// 같은 이미지를 다시 넣지 않도록 (미리보기 중 매 입력마다 다시 그리는 것 방지)
+function setSrc(img, u) { if (u && img.dataset.src !== u) { img.dataset.src = u; img.src = u; } }
+// 설정 화면의 미리보기에서도 쓰이므로 data 대신 임의 객체를 받음
+function applyLook(o) {
+  const t = $('topbar'), text = o.topMode === 'text', ic = o.topIcon || assets.banner;
   t.dataset.mode = o.topMode;
   t.style.height = o.topH + 'px';
-  t.style.backgroundImage = !text && o.topimg ? 'url("' + o.topimg + '")' : 'none';
+  t.style.backgroundImage = text ? 'none' : bg(o.topimg);
   $('tbText').textContent = o.topText;
-  const ic = o.topIcon || assets.banner;
   $('tbIcon').hidden = !ic;
-  if (ic) $('tbIcon').src = ic;
+  setSrc($('tbIcon'), ic);
+  $('photo').style.width = o.photoW + '%';
+  setSrc($('photo'), o.photo || PLACEHOLDER);
+}
+// 배너 글자 길이와 상관없이 같은 속도(초당 70px)로 흐르게
+function fitMarquee() {
+  const s = $('vBanner');
+  s.style.animationDuration = Math.max(6, s.offsetWidth / 70) + 's';
 }
 function render() {
   $('vName').textContent = data.name;
@@ -324,12 +390,10 @@ function render() {
   $('vTimeLabel').textContent = data.timeLabel;
   $('vHint').textContent = data.hint;
   $('vBanner').textContent = data.banner;
-  applyTop(data);
+  applyLook(data);
   applyIcon();
-  $('photo').style.width = data.photoW + '%';
-  $('photo').style.width = data.photoW + '%';
-  $('photo').src = data.photo || PLACEHOLDER;
   applyDetail();
+  fitMarquee();
   drawQr();
   startTimer();
 }
@@ -345,12 +409,8 @@ function drawQr() {
   const payload = (data.qr || '-') + '|' + Date.now().toString(36) + '|' + token(64);
   try { new QRCode($('qr'), { text: payload, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.H }); } catch (e) {}
 }
-function startTimer() {
-  clearInterval(timer);
-  endAt = Date.now() + data.secs * 1000;
-  tick(); timer = setInterval(tick, 250);
-}
-let lastShown = -1;
+// 시각 기준으로 계산하므로 백그라운드에 다녀와도 시간이 어긋나지 않음
+let endAt = 0, timer, lastShown = -1;
 function tick() {
   let left = Math.ceil((endAt - Date.now()) / 1000);
   if (left <= 0) { endAt = Date.now() + data.secs * 1000; left = data.secs; drawQr(); }
@@ -359,166 +419,192 @@ function tick() {
   $('vTime').textContent = left + '초';
   $('barFill').style.width = (left / data.secs * 100) + '%';
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+function runTimer() { clearInterval(timer); tick(); timer = setInterval(tick, 250); }
+function startTimer() { endAt = Date.now() + data.secs * 1000; lastShown = -1; runTimer(); }
 
-/* ---------- 저장 ---------- */
-function persist() {
-  try { localStorage.setItem('idcard', JSON.stringify(data)); return true; }
-  catch (e) { toast('저장 공간이 부족합니다. 더 작은 이미지를 사용하세요.'); return false; }
-}
-try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
-let toastT;
-function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
-
-/* 큰 이미지는 축소해서 저장 (저장공간 절약) */
-function readImage(file, maxW, cb) {
+/* ---------- 이미지 처리 ---------- */
+// 큰 이미지는 축소해서 저장 (저장공간 절약). 사진은 JPEG, 나머지는 투명도를 살려 PNG
+function loadImage(file, cb) {
   const url = URL.createObjectURL(file), im = new Image();
-  im.onload = () => {
+  im.onload = () => { URL.revokeObjectURL(url); cb(im); };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('이미지를 불러올 수 없습니다'); };
+  im.src = url;
+}
+function readImage(file, maxW, cb, forceJpeg) {
+  loadImage(file, im => {
     const k = Math.min(1, maxW / im.width), c = document.createElement('canvas');
     c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
-    const x = c.getContext('2d'), jpeg = file.type === 'image/jpeg';
+    const x = c.getContext('2d'), jpeg = forceJpeg || file.type === 'image/jpeg';
     if (jpeg) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); } // JPEG는 투명을 못 담으므로 흰 배경
     x.drawImage(im, 0, 0, c.width, c.height);
-    URL.revokeObjectURL(url);
-    cb(c.toDataURL(jpeg ? 'image/jpeg' : 'image/png', .88)); // PNG/WebP/GIF 등은 투명도 유지
-  };
-  im.onerror = () => { URL.revokeObjectURL(url); toast('이미지를 불러올 수 없습니다.'); };
-  im.src = url;
+    cb(c.toDataURL(jpeg ? 'image/jpeg' : 'image/png', .88));
+  });
 }
-
-/* 아이콘: 가운데 기준 정사각형으로 잘라 180px PNG로 저장 */
+// 앱 아이콘: 가운데 기준 정사각형으로 잘라 180px PNG (iOS는 투명 영역을 검게 칠하므로 흰 배경)
 function readIcon(file, cb) {
-  const url = URL.createObjectURL(file), im = new Image();
-  im.onload = () => {
-    const n = 180, c = document.createElement('canvas'), x = c.getContext('2d');
+  loadImage(file, im => {
+    const n = 180, c = document.createElement('canvas'), x = c.getContext('2d'), side = Math.min(im.width, im.height);
     c.width = c.height = n;
     x.fillStyle = '#fff'; x.fillRect(0, 0, n, n);
-    const side = Math.min(im.width, im.height);
     x.drawImage(im, (im.width - side) / 2, (im.height - side) / 2, side, side, 0, 0, n, n);
-    URL.revokeObjectURL(url);
     cb(c.toDataURL('image/png'));
-  };
-  im.onerror = () => { URL.revokeObjectURL(url); toast('이미지를 불러올 수 없습니다.'); };
-  im.src = url;
+  });
 }
 
-/* ---------- 편집 시트 ---------- */
-const TEXT = { appName: 'fAppName', topText: 'fTopText', name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
-               qr: 'fQr', timeLabel: 'fTimeLabel', hint: 'fHint', banner: 'fBanner' };
-const NUM = { secs: 'fSecs', topH: 'fTopH', photoW: 'fPhotoW' };
+/* ---------- 설정 시트 ---------- */
+const TEXT = { name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
+               topText: 'fTopText', qr: 'fQr', timeLabel: 'fTimeLabel', hint: 'fHint', banner: 'fBanner', appName: 'fAppName' };
+const NUM = { photoW: 'fPhotoW', topH: 'fTopH', secs: 'fSecs' };
+let snapshot = '';
+
+function collect() {
+  const d = Object.assign({}, draft);
+  for (const k in TEXT) d[k] = $(TEXT[k]).value;
+  for (const k in NUM) { const v = $(NUM[k]).value.trim(); d[k] = v === '' ? NaN : Number(v); }
+  return sanitize(d);
+}
 function preview() {
-  $('pvTop').style.backgroundImage = draft.topimg ? 'url("' + draft.topimg + '")' : 'none';
-  applyTop(Object.assign({}, draft, { topH: Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), topText: $('fTopText').value }));
-  const ti = draft.topIcon || assets.banner;
-  $('pvTopIcon').style.backgroundImage = ti ? 'url("' + ti + '")' : 'none';
+  const d = collect();
+  applyLook(d); // 상단 바, 사진 크기 등은 저장 전에 미리 보여줌
+  $('pvPhoto').style.backgroundImage = bg(draft.photo || PLACEHOLDER);
+  $('pvTopIcon').style.backgroundImage = bg(draft.topIcon || assets.banner);
+  $('pvTop').style.backgroundImage = bg(draft.topimg);
+  $('pvIcon').style.backgroundImage = bg(draft.icon || assets.icon || 'icon-180.png');
+  $('clearPhoto').disabled = !draft.photo;
+  $('clearTopIcon').disabled = !draft.topIcon;
+  $('clearTop').disabled = !draft.topimg;
+  $('clearIcon').disabled = !draft.icon;
   $('topGrp').dataset.mode = draft.topMode;
   document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === draft.topMode));
-  $('pvIcon').style.backgroundImage = 'url("' + (draft.icon || assets.icon || 'icon-180.png') + '")';
-  $('photo').style.width = Math.min(80, Math.max(25, parseInt($('fPhotoW').value, 10) || data.photoW)) + '%';
-  $('pvPhoto').style.backgroundImage = 'url("' + (draft.photo || PLACEHOLDER) + '")';
+}
+function showUsage() {
+  const kb = Math.round(JSON.stringify(data).length / 1024);
+  $('usage').textContent = '저장된 데이터 ' + kb + 'KB / 약 5,000KB';
 }
 function openPanel() {
   draft = Object.assign({}, data);
   for (const k in TEXT) $(TEXT[k]).value = draft[k];
   for (const k in NUM) $(NUM[k]).value = draft[k];
   $('fBackup').value = '';
-  preview();
+  preview(); showUsage();
+  snapshot = JSON.stringify(collect());
   $('panel').classList.add('open'); document.body.classList.add('lock');
+  $('panel').querySelector('.sheet-b').scrollTop = 0;
 }
-function closePanel() { applyTop(data); $('photo').style.width = data.photoW + '%'; $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
-function collect() {
-  const d = Object.assign({}, draft);
-  for (const k in TEXT) d[k] = $(TEXT[k]).value;
-  for (const k in NUM) d[k] = parseInt($(NUM[k]).value, 10);
-  return sanitize(d);
+const isOpen = () => $('panel').classList.contains('open');
+function closePanel(force) {
+  if (!isOpen()) return;
+  if (!force && JSON.stringify(collect()) !== snapshot && !confirm('저장하지 않은 변경사항이 있습니다. 닫을까요?')) return;
+  applyLook(data); // 미리보기 되돌리기
+  $('panel').classList.remove('open'); document.body.classList.remove('lock');
 }
 
-$('close').onclick = closePanel;
-$('fTopH').addEventListener('input', preview);
-$('fPhotoW').addEventListener('input', preview);
+$('close').onclick = () => closePanel();
+$('cancel').onclick = () => closePanel();
 $('panel').onclick = e => { if (e.target === $('panel')) closePanel(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-// 입력 보정 없이 문자열 그대로 입력되게 함 (대시 등 특수문자 입력 가능)
-document.querySelectorAll('input[type=text], textarea').forEach(el => {
-  el.setAttribute('autocapitalize', 'off'); el.setAttribute('autocorrect', 'off'); el.spellcheck = false;
-});
 $('save').onclick = () => {
   const prev = data;
   data = collect();
   if (!persist()) { data = prev; return; }
-  render(); closePanel(); toast('저장되었습니다');
+  render(); closePanel(true); toast('저장되었습니다');
 };
 
-$('bTopIcon').onclick = () => $('fTopIcon').click();
-$('fTopIcon').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 96, u => { draft.topIcon = u; preview(); }); };
-$('clearTopIcon').onclick = () => { draft.topIcon = ''; preview(); };
+// 입력칸: 자동 대문자/자동 수정 끄기, 엔터로 키보드 닫기, 입력 즉시 미리보기
+document.querySelectorAll('.sheet input[type=text], .sheet textarea').forEach(el => {
+  el.setAttribute('autocapitalize', 'off'); el.setAttribute('autocorrect', 'off'); el.setAttribute('autocomplete', 'off');
+  el.spellcheck = false;
+  if (el.tagName === 'INPUT') {
+    el.setAttribute('enterkeyhint', 'done');
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') el.blur(); });
+    el.addEventListener('input', preview);
+  }
+});
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { draft.topMode = b.dataset.m; preview(); });
-$('fTopText').addEventListener('input', preview);
-$('bTop').onclick = () => $('fTop').click();
-$('bPhoto').onclick = () => $('fPhoto').click();
-$('fTop').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 1400, u => { draft.topimg = u; preview(); }); };
-$('fPhoto').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readImage(f, 700, u => { draft.photo = u; preview(); }); };
-$('bIcon').onclick = () => $('fIcon').click();
-$('fIcon').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) readIcon(f, u => { draft.icon = u; preview(); }); };
-$('clearIcon').onclick = () => { draft.icon = ''; preview(); };
-$('clearTop').onclick = () => { draft.topimg = ''; preview(); };
-$('clearPhoto').onclick = () => { draft.photo = ''; preview(); };
 
+// 이미지 선택 버튼: [버튼 id, 파일 input id, draft 키, 처리 함수]
+const pickers = [
+  ['bPhoto', 'fPhoto', 'photo', (f, cb) => readImage(f, 600, cb, true)],
+  ['bTopIcon', 'fTopIcon', 'topIcon', (f, cb) => readImage(f, 96, cb)],
+  ['bTop', 'fTop', 'topimg', (f, cb) => readImage(f, 1400, cb)],
+  ['bIcon', 'fIcon', 'icon', readIcon]
+];
+for (const [btn, input, key, read] of pickers) {
+  $(btn).onclick = () => $(input).click();
+  $(input).onchange = e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (f) read(f, u => { draft[key] = u; preview(); });
+  };
+}
+const clears = { clearPhoto: 'photo', clearTopIcon: 'topIcon', clearTop: 'topimg', clearIcon: 'icon' };
+for (const id in clears) $(id).onclick = () => { draft[clears[id]] = ''; preview(); };
+
+// 백업 (이전 버전에서 만든 코드와 호환)
 const b64 = o => { let s = ''; new TextEncoder().encode(JSON.stringify(o)).forEach(x => s += String.fromCharCode(x)); return btoa(s); };
-const unb64 = t => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(t), c => c.charCodeAt(0))));
+const unb64 = t => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(t.replace(/\s+/g, '')), c => c.charCodeAt(0))));
 $('exp').onclick = async () => {
   const code = b64(collect()); $('fBackup').value = code; $('fBackup').select();
   try { await navigator.clipboard.writeText(code); toast('백업 코드가 복사되었습니다'); } catch (e) { toast('위 코드를 직접 복사하세요'); }
 };
 $('imp').onclick = () => {
-  try {
-    data = sanitize(unb64($('fBackup').value.trim()));
-    persist(); render(); openPanel(); toast('가져왔습니다');
-  } catch (e) { toast('올바르지 않은 백업 코드입니다'); }
+  const code = $('fBackup').value.trim();
+  if (!code) { toast('백업 코드를 먼저 붙여넣으세요'); return; }
+  let d;
+  try { d = sanitize(unb64(code)); } catch (e) { toast('올바르지 않은 백업 코드입니다'); return; }
+  const prev = data; data = d;
+  if (!persist()) { data = prev; return; }
+  render(); closePanel(true); openPanel(); toast('가져왔습니다');
 };
 $('reset').onclick = () => {
   if (!confirm('모든 내용을 기본값으로 되돌립니다. 계속할까요?')) return;
-  data = sanitize(); persist(); render(); openPanel(); toast('초기화되었습니다');
+  data = sanitize(); persist(); render(); closePanel(true); openPanel(); toast('초기화되었습니다');
 };
 
 /* ---------- 캡쳐 방지 ---------- */
-// 웹에서 가능한 범위: 앱이 가려지거나(앱 전환/화면 녹화 시작 직전 포커스 이탈) 캡쳐 단축키가 눌리면 화면을 가림
+// 웹에서 가능한 범위: 앱이 가려지거나(앱 전환 등) 캡쳐 단축키가 눌리면 화면을 가림
 let coverTimer;
 const cover = on => document.body.classList.toggle('covered', on);
 const uncoverIfActive = () => { if (!document.hidden) cover(false); };
 const clearClip = () => { try { navigator.clipboard.writeText('').catch(() => {}); } catch (_) {} };
-document.addEventListener('visibilitychange', () => document.hidden ? cover(true) : uncoverIfActive());
+function flashCover(ms) { cover(true); clearTimeout(coverTimer); coverTimer = setTimeout(uncoverIfActive, ms); }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { cover(true); clearInterval(timer); } // 숨겨진 동안 타이머 정지 (배터리 절약)
+  else { uncoverIfActive(); runTimer(); }
+});
 window.addEventListener('pagehide', () => cover(true));
 window.addEventListener('pageshow', uncoverIfActive);
 window.addEventListener('blur', () => cover(true));
 window.addEventListener('focus', uncoverIfActive);
-function flashCover(ms) { cover(true); clearTimeout(coverTimer); coverTimer = setTimeout(uncoverIfActive, ms); }
+window.addEventListener('beforeprint', () => cover(true));
+window.addEventListener('afterprint', uncoverIfActive);
 document.addEventListener('keydown', e => {
-  const shot = e.key === 'PrintScreen' || e.key === 'Snapshot' || (e.metaKey && e.shiftKey && ['Digit3', 'Digit4', 'Digit5'].includes(e.code)) || (e.metaKey && e.key === 'p') || (e.ctrlKey && e.key === 'p');
+  const shot = e.key === 'PrintScreen' || e.key === 'Snapshot'
+    || (e.metaKey && e.shiftKey && ['Digit3', 'Digit4', 'Digit5'].includes(e.code))
+    || ((e.metaKey || e.ctrlKey) && e.key === 'p');
   if (shot) { e.preventDefault(); flashCover(1500); clearClip(); }
 });
 document.addEventListener('keyup', e => { if (e.key === 'PrintScreen') { flashCover(1500); clearClip(); } });
 document.addEventListener('contextmenu', e => { if (!(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault(); });
 document.addEventListener('dragstart', e => e.preventDefault());
-window.addEventListener('beforeprint', () => cover(true));
-window.addEventListener('afterprint', uncoverIfActive);
 $('cover').addEventListener('click', uncoverIfActive); // 가림 화면이 남아 있으면 탭해서 해제
-
-/* 배너를 3번 연속 누르면 편집창 열기 */
-let taps = 0, tapT;
-$('banner').addEventListener('click', () => {
-  taps++; clearTimeout(tapT); tapT = setTimeout(() => taps = 0, 600);
-  if (taps >= 3) { taps = 0; openPanel(); }
-});
 
 /* ---------- 카드 동작 ---------- */
 $('vBtn').onclick = () => { showDetail = !showDetail; revealed = false; applyDetail(); };
 $('sw').onclick = () => { revealed = !revealed; applyDetail(); };
 
+// 배너를 빠르게 3번 누르면 설정 열기
+let taps = 0, tapT;
+$('banner').addEventListener('click', () => {
+  taps++; clearTimeout(tapT); tapT = setTimeout(() => taps = 0, 600);
+  if (taps >= 3) { taps = 0; openPanel(); }
+});
+window.addEventListener('resize', fitMarquee);
+
 render();
 Promise.all([findAsset('banner-img'), findAsset('icon-img')]).then(([b, i]) => {
   assets.banner = b; assets.icon = i;
-  applyTop(data); applyIcon();
+  if (isOpen()) preview(); else applyLook(data);
+  applyIcon();
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
