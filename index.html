@@ -44,7 +44,7 @@
   .phone {
     position: relative; width: 100%; max-width: 420px; min-height: 100vh; min-height: 100dvh;
     background: var(--bg); display: flex; flex-direction: column; overflow: hidden;
-    padding: calc(36px + var(--top)) 16px var(--bottom);
+    padding: calc(36px + var(--top)) 16px 0;
   }
   .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--bg) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
   .topbar { position: relative; }
@@ -59,10 +59,10 @@
   .seg { display: flex; margin-left: auto; background: #eef0f6; border-radius: 9px; padding: 2px; }
   .seg button { border: 0; background: transparent; border-radius: 7px; padding: 6px 12px; font-size: 13px; color: #555; cursor: pointer; }
   .seg button[aria-pressed=true] { background: #fff; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
-  .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 2px 10px rgba(30,40,120,.08); }
-  .photo { display: flex; justify-content: center; padding-top: 32px; }
-  .photo img { width: 58%; aspect-ratio: 3/4; object-fit: cover; background: #f1f2f6; display: block; }
-  .info { display: flex; justify-content: space-between; align-items: center; padding: 44px 28px 0; gap: 12px; }
+  .card { margin-bottom: 28px; background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 2px 10px rgba(30,40,120,.08); }
+  .photo { display: flex; justify-content: center; padding-top: 26px; }
+  .photo img { width: 46%; aspect-ratio: 4/5; object-fit: cover; background: #f1f2f6; display: block; }
+  .info { display: flex; justify-content: space-between; align-items: center; padding: 32px 28px 0; gap: 12px; }
   .name { font-size: 26px; line-height: 1.2; }
   .birth { font-size: 28px; margin-top: 6px; letter-spacing: .5px; }
   .addr, .addr2 { font-size: 14px; color: var(--sub); }
@@ -92,7 +92,7 @@
   .hint { text-align: center; font-size: 11px; color: #c4c4cc; padding: 22px 0; }
   .detail-btn { width: 100%; border: 0; background: var(--blue); color: #fff; font-size: 19px; padding: 28px 0; cursor: pointer; }
   .banner {
-    margin: 28px -16px 0; height: 62px; flex: none; overflow: hidden; display: flex; align-items: center;
+    margin: auto -16px 0; height: calc(62px + var(--bottom)); padding-bottom: var(--bottom); flex: none; overflow: hidden; display: flex; align-items: center;
     background: linear-gradient(90deg, #1ec6f0, #5b8cf0 60%, #9a6fe0); color: #fff; font-size: 17px;
   }
   .banner span { white-space: nowrap; padding-left: 100%; animation: marq 12s linear infinite; }
@@ -180,6 +180,7 @@
       <div class="grp">
         <div class="f"><label>사진</label><div class="thumb" id="pvPhoto"></div>
           <button class="btn" id="bPhoto">변경</button><button class="btn danger" id="clearPhoto">제거</button></div>
+        <div class="f"><label>사진 크기(%)</label><input type="text" id="fPhotoW" placeholder="25~80"></div>
       </div>
       <input type="file" id="fTopIcon" accept="image/*">
       <input type="file" id="fTop" accept="image/*"><input type="file" id="fPhoto" accept="image/*">
@@ -249,7 +250,7 @@ const DEFAULTS = {
   qr: 'SAMPLE-ID-0000', secs: 30, timeLabel: '남은시간', hint: 'QR코드를 리더기에 스캔하세요',
   banner: '캡쳐방지 시스템이 작동 중입니다. 캡쳐방지', photo: '', topimg: '', topH: 36,
   icon: '', appName: 'ID',
-  topMode: 'text', topText: '주민등록증 모바일 확인 서비스', topIcon: ''
+  photoW: 46, topMode: 'text', topText: '주민등록증 모바일 확인 서비스', topIcon: ''
 };
 const IMG_KEYS = ['photo', 'topimg', 'icon', 'topIcon'];
 
@@ -265,6 +266,7 @@ function sanitize(src) {
     out[k] = v;
   }
   out.secs = Math.min(3600, Math.max(1, Math.round(out.secs) || DEFAULTS.secs));
+  out.photoW = Math.min(80, Math.max(25, Math.round(out.photoW) || DEFAULTS.photoW));
   out.topMode = out.topMode === 'image' ? 'image' : 'text';
   out.topH = Math.min(200, Math.max(0, Math.round(out.topH) || 0));
   return out;
@@ -324,6 +326,8 @@ function render() {
   $('vBanner').textContent = data.banner;
   applyTop(data);
   applyIcon();
+  $('photo').style.width = data.photoW + '%';
+  $('photo').style.width = data.photoW + '%';
   $('photo').src = data.photo || PLACEHOLDER;
   applyDetail();
   drawQr();
@@ -401,7 +405,7 @@ function readIcon(file, cb) {
 /* ---------- 편집 시트 ---------- */
 const TEXT = { appName: 'fAppName', topText: 'fTopText', name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', idnum: 'fIdnum', btn: 'fBtn', btnHide: 'fBtnHide',
                qr: 'fQr', timeLabel: 'fTimeLabel', hint: 'fHint', banner: 'fBanner' };
-const NUM = { secs: 'fSecs', topH: 'fTopH' };
+const NUM = { secs: 'fSecs', topH: 'fTopH', photoW: 'fPhotoW' };
 function preview() {
   $('pvTop').style.backgroundImage = draft.topimg ? 'url("' + draft.topimg + '")' : 'none';
   applyTop(Object.assign({}, draft, { topH: Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), topText: $('fTopText').value }));
@@ -410,6 +414,7 @@ function preview() {
   $('topGrp').dataset.mode = draft.topMode;
   document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === draft.topMode));
   $('pvIcon').style.backgroundImage = 'url("' + (draft.icon || assets.icon || 'icon-180.png') + '")';
+  $('photo').style.width = Math.min(80, Math.max(25, parseInt($('fPhotoW').value, 10) || data.photoW)) + '%';
   $('pvPhoto').style.backgroundImage = 'url("' + (draft.photo || PLACEHOLDER) + '")';
 }
 function openPanel() {
@@ -420,7 +425,7 @@ function openPanel() {
   preview();
   $('panel').classList.add('open'); document.body.classList.add('lock');
 }
-function closePanel() { applyTop(data); $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
+function closePanel() { applyTop(data); $('photo').style.width = data.photoW + '%'; $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
 function collect() {
   const d = Object.assign({}, draft);
   for (const k in TEXT) d[k] = $(TEXT[k]).value;
@@ -430,6 +435,7 @@ function collect() {
 
 $('close').onclick = closePanel;
 $('fTopH').addEventListener('input', preview);
+$('fPhotoW').addEventListener('input', preview);
 $('panel').onclick = e => { if (e.target === $('panel')) closePanel(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 // 입력 보정 없이 문자열 그대로 입력되게 함 (대시 등 특수문자 입력 가능)
