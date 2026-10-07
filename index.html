@@ -46,7 +46,7 @@
     background: var(--bg); display: flex; flex-direction: column; overflow: hidden;
     padding: calc(36px + var(--top)) 16px var(--bottom);
   }
-  .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--navy) center/cover no-repeat; flex: none; box-sizing: content-box; }
+  .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--navy) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
   .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 2px 10px rgba(30,40,120,.08); }
   .photo { display: flex; justify-content: center; padding-top: 32px; }
   .photo img { width: 58%; aspect-ratio: 3/4; object-fit: cover; background: #f1f2f6; display: block; }
@@ -247,6 +247,10 @@ function applyDetail() {
   $('vAddr2').textContent = revealed ? data.addr2 : data.addr2.replace(/\d/g, '*');
   $('vBtn').textContent = showDetail ? data.btnHide : data.btn;
 }
+function applyTop(h, img) {
+  $('topbar').style.height = h + 'px';
+  $('topbar').style.backgroundImage = img ? 'url("' + img + '")' : 'none';
+}
 function render() {
   $('vName').textContent = data.name;
   $('vBirth').textContent = data.birth;
@@ -254,8 +258,7 @@ function render() {
   $('vTimeLabel').textContent = data.timeLabel;
   $('vHint').textContent = data.hint;
   $('vBanner').textContent = data.banner;
-  $('topbar').style.height = data.topH + 'px';
-  $('topbar').style.backgroundImage = data.topimg ? 'url("' + data.topimg + '")' : 'none';
+  applyTop(data.topH, data.topimg);
   $('photo').src = data.photo || PLACEHOLDER;
   applyDetail();
   drawQr();
@@ -318,6 +321,7 @@ const TEXT = { name: 'fName', birth: 'fBirth', addr: 'fAddr', addr2: 'fAddr2', i
 const NUM = { secs: 'fSecs', topH: 'fTopH' };
 function preview() {
   $('pvTop').style.backgroundImage = draft.topimg ? 'url("' + draft.topimg + '")' : 'none';
+  applyTop(Math.min(200, Math.max(0, parseInt($('fTopH').value, 10) || 0)), draft.topimg);
   $('pvPhoto').style.backgroundImage = 'url("' + (draft.photo || PLACEHOLDER) + '")';
 }
 function openPanel() {
@@ -328,7 +332,7 @@ function openPanel() {
   preview();
   $('panel').classList.add('open'); document.body.classList.add('lock');
 }
-function closePanel() { $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
+function closePanel() { applyTop(data.topH, data.topimg); $('panel').classList.remove('open'); document.body.classList.remove('lock'); }
 function collect() {
   const d = Object.assign({}, draft);
   for (const k in TEXT) d[k] = $(TEXT[k]).value;
@@ -337,6 +341,7 @@ function collect() {
 }
 
 $('close').onclick = closePanel;
+$('fTopH').addEventListener('input', preview);
 $('panel').onclick = e => { if (e.target === $('panel')) closePanel(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
 $('save').onclick = () => {
