@@ -49,6 +49,9 @@
   .topbar { margin: calc(-36px - var(--top)) -16px 24px; padding-top: var(--top); background: var(--bg) center/100% 100% no-repeat; flex: none; box-sizing: content-box; }
   .topbar { position: relative; }
   .tb-in { display: none; height: 100%; align-items: center; gap: 12px; padding: 0 16px; color: #1d2040; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; }
+  .tb-menu { position: absolute; top: var(--top); bottom: 0; right: 16px; display: flex; align-items: center; pointer-events: none; color: #1d2040; }
+  .tb-menu svg { width: 24px; height: 24px; display: block; }
+  .tb-in { padding-right: 56px; }
   .tb-in span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .tb-ic { width: 26px; height: 26px; flex: none; object-fit: contain; }
   .topbar[data-mode=text] .tb-in { display: flex; }
@@ -131,7 +134,8 @@
 </head>
 <body>
 <div class="phone">
-  <div class="topbar" id="topbar"><div class="tb-in"><img class="tb-ic" id="tbIcon" alt="" hidden><span id="tbText"></span></div></div>
+  <div class="topbar" id="topbar"><div class="tb-in"><img class="tb-ic" id="tbIcon" alt="" hidden><span id="tbText"></span></div>
+    <div class="tb-menu" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div></div>
 
   <div class="card" id="card">
     <div class="photo"><img id="photo" alt=""></div>
